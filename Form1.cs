@@ -7,6 +7,8 @@ using System.Security.Policy;
 using System.Text.Json.Nodes;
 using System.Dynamic;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
+using System.IO.Packaging;
+using System.Xml.Linq;
 
 namespace OpenGTP
 {
@@ -29,9 +31,12 @@ namespace OpenGTP
                 MessageBox.Show("You must specify an OpenAPI Key.", "STRATUS AppKey");
                 return;
             }
+            var curr = Cursor.Current;
+            Cursor.Current = Cursors.WaitCursor;
             btnFetch.Enabled = true;
             GetProjects();
             GetReports();
+            Cursor.Current = curr;
         }
 
         private void GetReports()
@@ -42,6 +47,7 @@ namespace OpenGTP
             var reports = client.GetAsync("https://api.gtpstratus.com/v1/company/reports").Result;
 
             cbReports.Items.Clear();
+            cbReports.Items.Add(string.Empty);
             var res = reports.Content.ReadAsStringAsync().Result;
             _reports = JsonSerializer.Deserialize<List<NamedId>>(res);
 
@@ -59,11 +65,14 @@ namespace OpenGTP
         private void GetProjects()
         {
             cbProjects.Items.Clear();
+            cbProjects.Items.Add(string.Empty);
+            cbProjects.SelectedIndex = 0;
             _projects = new List<NamedId>();
             var key = apiKey.Text;
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("app-key", key);
-            var json = client.GetAsync("https://api.gtpstratus.com/v2/project").Result;
+            var uri = "https://api.gtpstratus.com/v2/project";
+            var json = client.GetAsync(uri).Result;
             var res = json.Content.ReadAsStringAsync().Result;
             var data = JsonSerializer.Deserialize<JsonObject>(res);
             if (data != null)
@@ -87,11 +96,15 @@ namespace OpenGTP
         private void GetModels(string projectId)
         {
             cbModels.Items.Clear();
+            cbModels.Items.Add(string.Empty);
+            cbModels.SelectedIndex = 0;
+            cbModels.Refresh();
             _models = new List<NamedId>();
             var key = apiKey.Text;
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("app-key", key);
-            var json = client.GetAsync("https://api.gtpstratus.com/v1/model?where=ProjectId={projectId}").Result;
+            var uri = $"https://api.gtpstratus.com/v1/model?where=ProjectId%3D%22{projectId}%22";
+            var json = client.GetAsync(uri).Result;
             var res = json.Content.ReadAsStringAsync().Result;
             var data = JsonSerializer.Deserialize<JsonObject>(res);
             if (data != null)
@@ -115,11 +128,15 @@ namespace OpenGTP
         private void GetPackages(string modelId)
         {
             cbPackage.Items.Clear();
+            cbPackage.Items.Add(string.Empty);
+            cbPackage.SelectedIndex = 0;
+            cbPackage.Refresh();
             _packages = new List<NamedId>();
             var key = apiKey.Text;
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("app-key", key);
-            var json = client.GetAsync("https://api.gtpstratus.com/v1/package?where=ModelId={modelId}").Result;
+            var uri = $"https://api.gtpstratus.com/v1/package?where=ModelId%3D%22{modelId}%22";
+            var json = client.GetAsync(uri).Result;
             var res = json.Content.ReadAsStringAsync().Result;
             var data = JsonSerializer.Deserialize<JsonObject>(res);
             if (data != null)
@@ -186,7 +203,11 @@ namespace OpenGTP
             var model = _models.Where(x => x.name == selected).FirstOrDefault();
             if (model != null)
             {
+                var curr = Cursor.Current;
+                Cursor.Current = Cursors.WaitCursor;
                 GetPackages(model.id);
+                Cursor.Current = curr;
+                Refresh();
             }
         }
 
@@ -196,7 +217,11 @@ namespace OpenGTP
             var project = _projects.Where(x => x.name == selected).FirstOrDefault();
             if (project != null)
             {
+                var curr = Cursor.Current;
+                Cursor.Current = Cursors.WaitCursor;
                 GetModels(project.id);
+                Cursor.Current = curr;
+                Refresh();
             }
         }
 
@@ -215,25 +240,37 @@ namespace OpenGTP
             {
                 var modelName = (string)cbModels.SelectedItem;
                 var model = _models.Where(x => x.name == modelName).FirstOrDefault();
-                modelId = model.id;
+                if (model != null)
+                {
+                    modelId = model.id;
+                }
             }
             if (cbProjects.SelectedItem != null)
             {
                 var projectName = (string)cbProjects.SelectedItem;
                 var project = _projects.Where(x => x.name == projectName).FirstOrDefault();
-                projectId = project.id;
+                if (packageId != null)
+                {
+                    projectId = project.id;
+                }
             }
             if (cbPackage.SelectedItem != null)
             {
                 var packageName = (string)cbPackage.SelectedItem;
                 var package = _packages.Where(x => x.name == packageName).FirstOrDefault();
-                packageId = package.id;
+                if (package != null)
+                {
+                    packageId = package.id;
+                }
             }
             if (cbReports.SelectedItem != null)
             {
                 var reportName = (string)cbReports.SelectedItem;
                 var report = _reports.Where(x => x.name == reportName).FirstOrDefault();
-                reportId = report.id;
+                if (report != null)
+                {
+                    reportId = report.id;
+                }
             }
             RunReport(projectId, modelId, packageId, reportId);
         }
