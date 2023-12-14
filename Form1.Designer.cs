@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             cbReports = new ComboBox();
             label1 = new Label();
             apiKey = new TextBox();
@@ -43,6 +44,11 @@
             label6 = new Label();
             panel1 = new Panel();
             panel2 = new Panel();
+            label8 = new Label();
+            tbLink = new TextBox();
+            label7 = new Label();
+            btnCopy = new Button();
+            cbHttps = new CheckBox();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             SuspendLayout();
@@ -54,6 +60,7 @@
             cbReports.Name = "cbReports";
             cbReports.Size = new Size(250, 23);
             cbReports.TabIndex = 2;
+            cbReports.SelectedIndexChanged += OnReportChanged;
             // 
             // label1
             // 
@@ -157,7 +164,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(108, 12);
+            label6.Location = new Point(105, 17);
             label6.Name = "label6";
             label6.Size = new Size(239, 15);
             label6.TabIndex = 13;
@@ -165,7 +172,9 @@
             // 
             // panel1
             // 
+            panel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             panel1.BorderStyle = BorderStyle.FixedSingle;
+            panel1.Controls.Add(cbHttps);
             panel1.Controls.Add(cbProjects);
             panel1.Controls.Add(cbReports);
             panel1.Controls.Add(btnFetch);
@@ -175,28 +184,86 @@
             panel1.Controls.Add(cbModels);
             panel1.Controls.Add(label4);
             panel1.Controls.Add(label5);
-            panel1.Location = new Point(12, 111);
+            panel1.Location = new Point(12, 122);
             panel1.Name = "panel1";
             panel1.Size = new Size(503, 209);
             panel1.TabIndex = 1;
             // 
             // panel2
             // 
+            panel2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             panel2.BorderStyle = BorderStyle.FixedSingle;
+            panel2.Controls.Add(label8);
             panel2.Controls.Add(apiKey);
             panel2.Controls.Add(label2);
             panel2.Controls.Add(label6);
             panel2.Controls.Add(btnOpenAPI);
             panel2.Location = new Point(12, 12);
             panel2.Name = "panel2";
-            panel2.Size = new Size(503, 83);
+            panel2.Size = new Size(503, 93);
             panel2.TabIndex = 0;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(105, 61);
+            label8.Name = "label8";
+            label8.Size = new Size(162, 15);
+            label8.TabIndex = 4;
+            label8.Text = "Add to Power BI as \"app-key\"";
+            // 
+            // tbLink
+            // 
+            tbLink.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tbLink.Location = new Point(12, 379);
+            tbLink.Name = "tbLink";
+            tbLink.Size = new Size(500, 23);
+            tbLink.TabIndex = 2;
+            // 
+            // label7
+            // 
+            label7.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label7.AutoSize = true;
+            label7.Location = new Point(12, 361);
+            label7.Name = "label7";
+            label7.Size = new Size(352, 15);
+            label7.TabIndex = 3;
+            label7.Text = "Paste this URL into Power BI under the \"Get data\" ->  Web option:";
+            // 
+            // btnCopy
+            // 
+            btnCopy.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnCopy.BackgroundImage = (Image)resources.GetObject("btnCopy.BackgroundImage");
+            btnCopy.BackgroundImageLayout = ImageLayout.Stretch;
+            btnCopy.Location = new Point(483, 407);
+            btnCopy.Name = "btnCopy";
+            btnCopy.Size = new Size(30, 28);
+            btnCopy.TabIndex = 4;
+            btnCopy.UseVisualStyleBackColor = true;
+            btnCopy.Click += btnCopy_Click;
+            // 
+            // cbHttps
+            // 
+            cbHttps.AutoSize = true;
+            cbHttps.CheckAlign = ContentAlignment.MiddleRight;
+            cbHttps.Checked = true;
+            cbHttps.CheckState = CheckState.Checked;
+            cbHttps.Location = new Point(440, 170);
+            cbHttps.Name = "cbHttps";
+            cbHttps.Size = new Size(53, 19);
+            cbHttps.TabIndex = 13;
+            cbHttps.Text = "https";
+            cbHttps.TextAlign = ContentAlignment.MiddleRight;
+            cbHttps.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(527, 337);
+            ClientSize = new Size(537, 445);
+            Controls.Add(btnCopy);
+            Controls.Add(label7);
+            Controls.Add(tbLink);
             Controls.Add(panel2);
             Controls.Add(panel1);
             Name = "Form1";
@@ -206,6 +273,7 @@
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -225,5 +293,10 @@
         private Label label6;
         private Panel panel1;
         private Panel panel2;
+        private TextBox tbLink;
+        private Label label7;
+        private Label label8;
+        private Button btnCopy;
+        private CheckBox cbHttps;
     }
 }
