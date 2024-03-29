@@ -34,5 +34,53 @@ namespace OpenGTP.Properties {
                 this["AppKey"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\")]
+        public string CompLoc {
+            get {
+                return ((string)(this["CompLoc"]));
+            }
+            set {
+                this["CompLoc"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\")]
+        public string GoldenLoc {
+            get {
+                return ((string)(this["GoldenLoc"]));
+            }
+            set {
+                this["GoldenLoc"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool https {
+            get {
+                return ((bool)(this["https"]));
+            }
+            set {
+                this["https"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Production")]
+        public string Env {
+            get {
+                return ((string)(this["Env"]));
+            }
+            set {
+                this["Env"] = value;
+            }
+        }
     }
 }

@@ -14,19 +14,35 @@ namespace OpenGTP
         private List<NamedId> _packages = new List<NamedId>();
         private int minTimeout = 45; // give things this long to run
 
-        private string http {
-            get 
+        private string http
+        {
+            get
             {
                 if (cbHttps.Checked)
                     return "https";
                 return "http";
-            } 
+            }
+        }
+        private string domain
+        {
+            get
+            {
+                if (cbEnv.Text == "Production")
+                {
+                    return "api.gtpstratus.com";
+                }
+                return "api-dev.gtpstratus.com";
+            }
         }
 
         public Form1()
         {
             InitializeComponent();
             apiKey.Text = (string)Settings.Default["AppKey"];
+            tbCompLoc.Text = (string)Settings.Default["CompLoc"];
+            tbGoldenLoc.Text = (string)Settings.Default["GoldenLoc"];
+            cbHttps.Checked = (bool)Settings.Default["https"];
+            cbEnv.Text = (string)Settings.Default["Env"];
         }
 
         /// <summary>
@@ -299,7 +315,7 @@ namespace OpenGTP
             Cursor.Current = Cursors.WaitCursor;
             var key = apiKey.Text;
             var client = new HttpClient();
-            client.Timeout = TimeSpan.FromMinutes(minTimeout); 
+            client.Timeout = TimeSpan.FromMinutes(minTimeout);
             client.DefaultRequestHeaders.Add("app-key", key);
             var url = SetReportURL(); // get the STRATUS Open API package/dashboard link
             try
@@ -365,6 +381,58 @@ namespace OpenGTP
         private void btnCopy_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(tbLink.Text);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //cbReports.
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnGoldDir_Click(object sender, EventArgs e)
+        {
+            // Open file dialog to get the Gold Directory
+            var dialog = new FolderBrowserDialog();
+            dialog.Description = "Select the directory location of the Golden files";
+            dialog.ShowNewFolderButton = false;
+            dialog.RootFolder = Environment.SpecialFolder.MyComputer;
+            dialog.SelectedPath =  @"C:\";
+            if (!string.IsNullOrEmpty((string)Settings.Default["GoldenLoc"]))
+            {
+                dialog.SelectedPath = (string)Settings.Default["GoldenLoc"];
+            }
+            var result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                tbGoldenLoc.Text = dialog.SelectedPath;
+                Settings.Default["GoldenLoc"] = tbGoldenLoc.Text;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void btnCompDir_Click(object sender, EventArgs e)
+        {
+            // Open file dialog to get the Comp Directory
+            var dialog = new FolderBrowserDialog();
+            dialog.Description = "Pick a location to save temp files, which will compare to the golden.";
+            dialog.ShowNewFolderButton = false;
+            dialog.RootFolder = Environment.SpecialFolder.MyComputer;
+            dialog.SelectedPath = @"C:\";
+            if (!string.IsNullOrEmpty((string)Settings.Default["CompLoc"]))
+            {
+                dialog.SelectedPath = (string)Settings.Default["CompLoc"];
+            }
+            var result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                tbCompLoc.Text = dialog.SelectedPath;
+                Settings.Default["CompLoc"] = tbCompLoc.Text;
+                Properties.Settings.Default.Save();
+            }
         }
     }
 }

@@ -5,5 +5,17 @@
     <Setting Name="AppKey" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="CompLoc" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\</Value>
+    </Setting>
+    <Setting Name="GoldenLoc" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\</Value>
+    </Setting>
+    <Setting Name="https" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Env" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Production</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
