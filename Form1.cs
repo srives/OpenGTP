@@ -1,4 +1,7 @@
 using System;
+using System.ComponentModel.Design;
+using System.Diagnostics;
+using System.IO.Packaging;
 using System.Security.Policy;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -12,26 +15,34 @@ namespace OpenGTP
         private List<NamedId> _projects = new List<NamedId>();
         private List<NamedId> _models = new List<NamedId>();
         private List<NamedId> _packages = new List<NamedId>();
-        private int minTimeout = 45; // give things this long to run
+        private int _minTimeout = 45; // give things this long to run
 
         private string http
         {
             get
             {
                 if (cbHttps.Checked)
+                {
                     return "https";
+                }
                 return "http";
             }
         }
-        private string domain
+        private string URLRoot
         {
             get
             {
-                if (cbEnv.Text == "Production")
+                if (cbEnv.Text.ToLower().StartsWith("local"))
                 {
-                    return "api.gtpstratus.com";
+                    return $"{http}://local";
                 }
-                return "api-dev.gtpstratus.com";
+
+                if (cbEnv.Text.ToLower().StartsWith("prod"))
+                {
+                    return $"{http}://api.gtpstratus.com";
+                }
+
+                return $"{http}://api-{cbEnv.Text.ToLower()}.gtpstratus.com";
             }
         }
 
@@ -43,6 +54,10 @@ namespace OpenGTP
             tbGoldenLoc.Text = (string)Settings.Default["GoldenLoc"];
             cbHttps.Checked = (bool)Settings.Default["https"];
             cbEnv.Text = (string)Settings.Default["Env"];
+            if (cbEnv.Text == string.Empty)
+            {
+                cbEnv.Text = "PROD";
+            }
         }
 
         /// <summary>
@@ -50,6 +65,7 @@ namespace OpenGTP
         /// </summary>
         private void btnOpenAPI_Click(object sender, EventArgs e)
         {
+            bool success = false;
             if (string.IsNullOrEmpty(apiKey.Text))
             {
                 MessageBox.Show("You must specify an OpenAPI Key.", "STRATUS AppKey");
@@ -59,22 +75,27 @@ namespace OpenGTP
             Properties.Settings.Default.Save();
             var curr = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
-            btnFetch.Enabled = true;
-            GetProjects();
-            GetReports();
+            cbReports.Items.Clear();
+            if (GetProjects(true) && GetListOfReports(true))
+            {
+                success = true;
+            }
+            btnFetch.Enabled = success;
+            btnCompareToGolden.Enabled = success;
+            btnCreateGolden.Enabled = success;
             Cursor.Current = curr;
         }
-
 
         /// <summary>
         /// Get a list of reports from STRATUS and put list in dropdown list
         /// </summary>
-        private void GetReports()
+        private bool GetListOfReports(bool showError)
         {
+            var success = true;
             var key = apiKey.Text;
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("app-key", key);
-            var url = $"{http}://api.gtpstratus.com/v1/company/reports";
+            var url = $"{URLRoot}/v1/company/reports";
             var reports = client.GetAsync(url).Result;
 
             cbReports.Items.Clear();
@@ -97,15 +118,28 @@ namespace OpenGTP
             }
             catch (Exception e)
             {
-                MessageBox.Show(url + Environment.NewLine + e.Message, "Reports Failed.");
+                success = false;
+                if (showError)
+                {
+                    MessageBox.Show(url + Environment.NewLine + e.Message, "Reports Failed.");
+                }
             }
+
+            if (_reports == null)
+            {
+                _reports = new List<NamedId>();
+            }
+
+            lblNumReports.Text = $"{_reports.Count}";
+            return success;
         }
 
         /// <summary>
         /// Get a list of projects from STRATUS and put each one in the projects dropdown list
         /// </summary>
-        private void GetProjects()
+        private bool GetProjects(bool showErrors)
         {
+            var success = true;
             cbProjects.Items.Clear();
             cbProjects.Items.Add(string.Empty);
             cbProjects.SelectedIndex = 0;
@@ -113,7 +147,7 @@ namespace OpenGTP
             var key = apiKey.Text;
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("app-key", key);
-            var uri = $"{http}://api.gtpstratus.com/v2/project";
+            var uri = $"{URLRoot}/v2/project";
             try
             {
                 var json = client.GetAsync(uri).Result;
@@ -138,15 +172,22 @@ namespace OpenGTP
             }
             catch (Exception e)
             {
-                MessageBox.Show(uri + Environment.NewLine + e.Message, "Projects Failed.");
+                success = false;
+                if (showErrors)
+                {
+                    MessageBox.Show(uri + Environment.NewLine + e.Message, $"{cbEnv.Text} Projects Failed.");
+                }
             }
+            lblNumPorjects.Text = $"{_projects.Count}";
+            return success;
         }
 
         /// <summary>
         /// Get a list of Models from STRATUS open API and put each one in the models dropdown list
         /// </summary>
-        private void GetModels(string projectId)
+        private bool GetModels(string projectId, bool showError)
         {
+            var success = true;
             cbModels.Items.Clear();
             cbModels.Items.Add(string.Empty);
             cbModels.SelectedIndex = 0;
@@ -155,7 +196,7 @@ namespace OpenGTP
             var key = apiKey.Text;
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("app-key", key);
-            var uri = $"{http}://api.gtpstratus.com/v1/model?where=ProjectId%3D%22{projectId}%22";
+            var uri = $"{URLRoot}/v1/model?where=ProjectId%3D%22{projectId}%22";
             try
             {
                 var json = client.GetAsync(uri).Result;
@@ -180,15 +221,23 @@ namespace OpenGTP
             }
             catch (Exception e)
             {
-                MessageBox.Show(uri + Environment.NewLine + e.Message, "Get Models Failed.");
+                success = false;
+                if (showError)
+                {
+                    MessageBox.Show(uri + Environment.NewLine + e.Message, "Get Models Failed.");
+                }
             }
+
+            lblNumModels.Text = $"{_models.Count}";
+            return success;
         }
 
         /// <summary>
         /// Get a list of packages from STRATUS Open API for the given model
         /// </summary>
-        private void GetPackages(string modelId)
+        private bool GetPackages(string modelId, bool showError)
         {
+            var success = true;
             cbPackage.Items.Clear();
             cbPackage.Items.Add(string.Empty);
             cbPackage.SelectedIndex = 0;
@@ -197,7 +246,7 @@ namespace OpenGTP
             var key = apiKey.Text;
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("app-key", key);
-            var uri = $"{http}://api.gtpstratus.com/v1/package?where=ModelId%3D%22{modelId}%22";
+            var uri = $"{URLRoot}/v1/package?where=ModelId%3D%22{modelId}%22";
 
             try
             {
@@ -223,9 +272,15 @@ namespace OpenGTP
             }
             catch (Exception e)
             {
-                MessageBox.Show(uri + Environment.NewLine + e.Message, "Get Packages Failed.");
+                success = false;
+                if (showError)
+                {
+                    MessageBox.Show(uri + Environment.NewLine + e.Message, "Get Packages Failed.");
+                }
             }
 
+            lblNumPackages.Text = $"{_packages.Count}";
+            return success;
         }
 
         /// <summary>
@@ -295,7 +350,7 @@ namespace OpenGTP
                 }
             }
 
-            var url = $"{http}://api.gtpstratus.com/v1/package/dashboard";
+            var url = $"{URLRoot}/v1/package/dashboard";
             url = AddParameter(url, "projectId", projectId);
             url = AddParameter(url, "packageId", packageId);
             url = AddParameter(url, "modelId", modelId);
@@ -309,28 +364,42 @@ namespace OpenGTP
         /// Run the package/dashboard report based on current report, project, model and pacakge
         /// Put the resulting data into a new window form
         /// </summary>
-        private void RunReport()
+        private string? RunReport(bool showInDialog = true, string? url = null)
         {
+            var csv = string.Empty;
             var curr = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
             var key = apiKey.Text;
             var client = new HttpClient();
-            client.Timeout = TimeSpan.FromMinutes(minTimeout);
+            client.Timeout = TimeSpan.FromMinutes(_minTimeout);
             client.DefaultRequestHeaders.Add("app-key", key);
-            var url = SetReportURL(); // get the STRATUS Open API package/dashboard link
+
+            if (string.IsNullOrEmpty(url))
+            {
+                url = SetReportURL(); // get the STRATUS Open API package/dashboard link
+            }
+
             try
             {
                 var json = client.GetAsync(url).Result;
-                var csv = json.Content.ReadAsStringAsync().Result;
+                csv = json.Content.ReadAsStringAsync().Result;
                 Cursor.Current = curr;
-                ReportForm rf = new ReportForm();
-                rf.Set(csv);
-                rf.ShowDialog();
+                if (showInDialog)
+                {
+                    ReportForm rf = new ReportForm();
+                    rf.Set(csv);
+                    rf.ShowDialog();
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error.");
+                if (showInDialog)
+                {
+                    MessageBox.Show(ex.Message, "Error.");
+                }
             }
+
+            return csv;
         }
 
         private void OnModelChanged(object sender, EventArgs e)
@@ -342,7 +411,7 @@ namespace OpenGTP
             {
                 var curr = Cursor.Current;
                 Cursor.Current = Cursors.WaitCursor;
-                GetPackages(model.id);
+                GetPackages(model.id, true);
                 Cursor.Current = curr;
                 Refresh();
             }
@@ -357,7 +426,7 @@ namespace OpenGTP
             {
                 var curr = Cursor.Current;
                 Cursor.Current = Cursors.WaitCursor;
-                GetModels(project.id);
+                GetModels(project.id, true);
                 Cursor.Current = curr;
                 Refresh();
             }
@@ -370,7 +439,7 @@ namespace OpenGTP
                 MessageBox.Show("You must specify an OpenAPI Key.", "STRATUS AppKey");
                 return;
             }
-            RunReport();
+            RunReport(true);
         }
 
         private void OnReportChanged(object sender, EventArgs e)
@@ -378,19 +447,31 @@ namespace OpenGTP
             SetReportURL();
         }
 
+        private void OnEnvChanged(object sender, EventArgs e)
+        {
+            var success = false;
+            if (cbEnv.Text != (string)Settings.Default["Env"])
+            {
+                Settings.Default["Env"] = cbEnv.Text;
+                Properties.Settings.Default.Save();
+                lblNumReports.Text = "0";
+                lblNumModels.Text = "0";
+                lblNumPackages.Text = "0";
+                lblNumPorjects.Text = "0";
+                cbReports.Items.Clear();
+                if (GetProjects(false) && GetListOfReports(false))
+                {
+                    success = true;
+                }
+                btnCreateGolden.Enabled = success;
+                btnCompareToGolden.Enabled = success;
+                btnFetch.Enabled = success;
+            }
+        }
+
         private void btnCopy_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(tbLink.Text);
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            //cbReports.
-        }
-
-        private void label9_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void btnGoldDir_Click(object sender, EventArgs e)
@@ -400,7 +481,7 @@ namespace OpenGTP
             dialog.Description = "Select the directory location of the Golden files";
             dialog.ShowNewFolderButton = false;
             dialog.RootFolder = Environment.SpecialFolder.MyComputer;
-            dialog.SelectedPath =  @"C:\";
+            dialog.SelectedPath = @"C:\";
             if (!string.IsNullOrEmpty((string)Settings.Default["GoldenLoc"]))
             {
                 dialog.SelectedPath = (string)Settings.Default["GoldenLoc"];
@@ -434,5 +515,120 @@ namespace OpenGTP
                 Properties.Settings.Default.Save();
             }
         }
+
+        private void RunAllReports(string saveToPath, bool writeZeroByteFiles)
+        {
+            var reports = 0;
+            var projects = 0;
+            var models = 0;
+            var packages = 0;
+            var errors = 0;
+
+            if (string.IsNullOrEmpty(saveToPath))
+            {
+                MessageBox.Show("You must specify a location to save the files.", "Save Location");
+                return;
+            }
+
+            if (saveToPath.EndsWith('\\'))
+            {
+                saveToPath = saveToPath.Substring(0, saveToPath.Length - 1);
+            }
+
+            if (!Directory.Exists(saveToPath))
+            {
+                Directory.CreateDirectory(saveToPath);
+            }
+
+            if (!Directory.Exists(saveToPath))
+            {
+                MessageBox.Show($"ERROR: {saveToPath} does not exist and could not be created.", "Save Location");
+                return;
+            }
+
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+            lblStartTime.Text = $"Started {DateTime.Now.ToString("HH:mm")}";
+            lblTotalTime.Text = "Running...";
+
+            // Loop through all reports, all projects, all models, all packages
+            // and create a golden file for each one
+            foreach (var report in _reports)
+            {
+                reports++;
+                projects = 0;
+                models = 0;
+                packages = 0;
+                lblProgress.Text = $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})";
+                foreach (var project in _projects)
+                {
+                    projects++;
+                    models = 0;
+                    packages = 0;
+                    lblProgress.Text = $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})";
+                    if (!GetModels(project.id, false))
+                    {
+                        errors++;
+                    }
+
+                    foreach (var model in _models)
+                    {
+                        models++;
+                        lblProgress.Text = $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})";
+                        var url = $"{URLRoot}/v1/package/dashboard?projectId={project.id}&modelId={model.id}&reportId={report.id}";
+                        var csv = RunReport(false, url);
+                        if (!string.IsNullOrEmpty(csv) || writeZeroByteFiles)
+                        {
+                            var fname = $"{saveToPath}\\{Clean(report.name)}{Clean(project.name)}{Clean(model.name)}.csv";
+                            File.WriteAllText(fname, csv);
+                        }
+
+                        if (cbRunEveryPackage.Checked == true)
+                        {
+                            packages = 0;
+                            GetPackages(model.id, false);
+                            foreach (var package in _packages)
+                            {
+                                packages++;
+                                lblProgress.Text = $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Package {packages} of {_packages.Count}. *({errors})";
+                                url = $"{URLRoot}/v1/package/dashboard?projectId={project.id}&packageId={package.id}&modelId={model.id}&reportId={report.id}";
+                                csv = RunReport(false, url);
+                                if (!string.IsNullOrEmpty(csv) || writeZeroByteFiles)
+                                {
+                                    var fname = $"{saveToPath}\\{Clean(report.name)}{Clean(project.name)}{Clean(model.name)}{Clean(package.name)}.csv";
+                                    File.WriteAllText(fname, csv);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            timer.Stop();
+            lblTotalTime.Text = $"{timer.Elapsed.TotalHours} hours";
+        }
+
+        private void btnCompareToGolden_Click(object sender, EventArgs e)
+        {
+            RunAllReports(tbCompLoc.Text, cbZeroBytes.Checked);
+        }
+
+        private void button_CreateGolden(object sender, EventArgs e)
+        {
+            RunAllReports(tbGoldenLoc.Text, cbZeroBytes.Checked); 
+        }
+
+        private string Clean(string s)
+        {
+            string ret = s.Replace(" ", "-").Replace("\t", "").Replace("\n", "").Replace("\r", "").Replace("\0", "")
+                    .Replace("&", "-").Replace("?", "").Replace("=", "").Replace(":", "").Replace(";", "")
+                    .Replace("!", "").Replace("@", "").Replace("#", "").Replace("|", "").Replace("\\", "")
+                    .Replace("$", "").Replace("%", "").Replace("^", "").Replace("*", "").Replace("/", "-")
+                    .Replace("\"", "-").Replace("'", "").Replace("`", "").Replace("~", "-").Replace("+", "")
+                    .Replace("<", "").Replace(">", "").Replace("=", "").Replace("--", "-").Replace("--", "-").Replace("--", "-");
+            return $"[{ret}]_";
+
+        }
+
     }
 }

@@ -46,8 +46,8 @@
             cbHttps = new CheckBox();
             label9 = new Label();
             tbGoldenLoc = new TextBox();
-            button2 = new Button();
-            button1 = new Button();
+            btnCompareToGolden = new Button();
+            btnCreateGolden = new Button();
             label8 = new Label();
             tbLink = new TextBox();
             label7 = new Label();
@@ -56,12 +56,26 @@
             label10 = new Label();
             groupBox1 = new GroupBox();
             groupBox2 = new GroupBox();
+            label12 = new Label();
+            cbRunEveryPackage = new CheckBox();
+            lblTotalTime = new Label();
+            lblStartTime = new Label();
+            lblProgress = new Label();
             btnCompDir = new Button();
             btnGoldDir = new Button();
             openFileDialog1 = new OpenFileDialog();
             groupBox3 = new GroupBox();
+            lblNumPackages = new Label();
+            lblNumModels = new Label();
+            lblNumPorjects = new Label();
+            lblNumReports = new Label();
+            label15 = new Label();
+            label14 = new Label();
+            label13 = new Label();
+            numReports = new Label();
             groupBox4 = new GroupBox();
             label11 = new Label();
+            cbZeroBytes = new CheckBox();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -168,7 +182,7 @@
             // btnFetch
             // 
             btnFetch.Enabled = false;
-            btnFetch.Location = new Point(416, 130);
+            btnFetch.Location = new Point(416, 172);
             btnFetch.Name = "btnFetch";
             btnFetch.Size = new Size(144, 23);
             btnFetch.TabIndex = 12;
@@ -189,10 +203,11 @@
             // 
             cbEnv.FormattingEnabled = true;
             cbEnv.Items.AddRange(new object[] { "QA", "PROD", "CI", "RC", "local" });
-            cbEnv.Location = new Point(127, 88);
+            cbEnv.Location = new Point(127, 78);
             cbEnv.Name = "cbEnv";
             cbEnv.Size = new Size(283, 23);
             cbEnv.TabIndex = 18;
+            cbEnv.SelectedIndexChanged += OnEnvChanged;
             // 
             // cbHttps
             // 
@@ -200,7 +215,7 @@
             cbHttps.CheckAlign = ContentAlignment.MiddleRight;
             cbHttps.Checked = true;
             cbHttps.CheckState = CheckState.Checked;
-            cbHttps.Location = new Point(416, 90);
+            cbHttps.Location = new Point(416, 80);
             cbHttps.Name = "cbHttps";
             cbHttps.Size = new Size(53, 19);
             cbHttps.TabIndex = 13;
@@ -211,39 +226,41 @@
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new Point(7, 30);
+            label9.Location = new Point(7, 60);
             label9.Name = "label9";
             label9.Size = new Size(94, 15);
             label9.TabIndex = 17;
             label9.Text = "Golden Location";
-            label9.Click += label9_Click;
             // 
             // tbGoldenLoc
             // 
-            tbGoldenLoc.Location = new Point(127, 27);
+            tbGoldenLoc.Location = new Point(127, 57);
             tbGoldenLoc.Name = "tbGoldenLoc";
             tbGoldenLoc.Size = new Size(260, 23);
             tbGoldenLoc.TabIndex = 16;
             tbGoldenLoc.Text = "c:\\repos\\GoldenReports";
             // 
-            // button2
+            // btnCompareToGolden
             // 
-            button2.Location = new Point(416, 61);
-            button2.Name = "button2";
-            button2.Size = new Size(144, 23);
-            button2.TabIndex = 15;
-            button2.Text = "Compare to Golden";
-            button2.UseVisualStyleBackColor = true;
+            btnCompareToGolden.Enabled = false;
+            btnCompareToGolden.Location = new Point(416, 91);
+            btnCompareToGolden.Name = "btnCompareToGolden";
+            btnCompareToGolden.Size = new Size(144, 23);
+            btnCompareToGolden.TabIndex = 15;
+            btnCompareToGolden.Text = "Compare to Golden";
+            btnCompareToGolden.UseVisualStyleBackColor = true;
+            btnCompareToGolden.Click += btnCompareToGolden_Click;
             // 
-            // button1
+            // btnCreateGolden
             // 
-            button1.Location = new Point(416, 27);
-            button1.Name = "button1";
-            button1.Size = new Size(144, 23);
-            button1.TabIndex = 14;
-            button1.Text = "Create Golden";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            btnCreateGolden.Enabled = false;
+            btnCreateGolden.Location = new Point(416, 57);
+            btnCreateGolden.Name = "btnCreateGolden";
+            btnCreateGolden.Size = new Size(144, 23);
+            btnCreateGolden.TabIndex = 14;
+            btnCreateGolden.Text = "Create Golden";
+            btnCreateGolden.UseVisualStyleBackColor = true;
+            btnCreateGolden.Click += button_CreateGolden;
             // 
             // label8
             // 
@@ -288,7 +305,7 @@
             // 
             // tbCompLoc
             // 
-            tbCompLoc.Location = new Point(127, 62);
+            tbCompLoc.Location = new Point(127, 92);
             tbCompLoc.Name = "tbCompLoc";
             tbCompLoc.Size = new Size(260, 23);
             tbCompLoc.TabIndex = 19;
@@ -297,7 +314,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new Point(7, 65);
+            label10.Location = new Point(7, 95);
             label10.Name = "label10";
             label10.Size = new Size(105, 15);
             label10.TabIndex = 18;
@@ -311,7 +328,7 @@
             groupBox1.Controls.Add(label7);
             groupBox1.Controls.Add(label8);
             groupBox1.FlatStyle = FlatStyle.Flat;
-            groupBox1.Location = new Point(12, 464);
+            groupBox1.Location = new Point(12, 576);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(574, 100);
             groupBox1.TabIndex = 7;
@@ -321,25 +338,77 @@
             // groupBox2
             // 
             groupBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            groupBox2.Controls.Add(cbZeroBytes);
+            groupBox2.Controls.Add(label12);
+            groupBox2.Controls.Add(cbRunEveryPackage);
+            groupBox2.Controls.Add(lblTotalTime);
+            groupBox2.Controls.Add(lblStartTime);
+            groupBox2.Controls.Add(lblProgress);
             groupBox2.Controls.Add(btnCompDir);
             groupBox2.Controls.Add(btnGoldDir);
-            groupBox2.Controls.Add(button2);
+            groupBox2.Controls.Add(btnCompareToGolden);
             groupBox2.Controls.Add(tbCompLoc);
-            groupBox2.Controls.Add(button1);
+            groupBox2.Controls.Add(btnCreateGolden);
             groupBox2.Controls.Add(label9);
             groupBox2.Controls.Add(tbGoldenLoc);
             groupBox2.Controls.Add(label10);
-            groupBox2.Location = new Point(12, 346);
+            groupBox2.Location = new Point(12, 368);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(570, 100);
+            groupBox2.Size = new Size(570, 184);
             groupBox2.TabIndex = 8;
             groupBox2.TabStop = false;
             groupBox2.Text = "QA Golden Compare";
             // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(11, 127);
+            label12.Name = "label12";
+            label12.Size = new Size(59, 15);
+            label12.TabIndex = 26;
+            label12.Text = "Packages:";
+            // 
+            // cbRunEveryPackage
+            // 
+            cbRunEveryPackage.AutoSize = true;
+            cbRunEveryPackage.Location = new Point(128, 127);
+            cbRunEveryPackage.Name = "cbRunEveryPackage";
+            cbRunEveryPackage.Size = new Size(234, 19);
+            cbRunEveryPackage.TabIndex = 25;
+            cbRunEveryPackage.Text = "Run Every Package as a Separate Report";
+            cbRunEveryPackage.UseVisualStyleBackColor = true;
+            // 
+            // lblTotalTime
+            // 
+            lblTotalTime.AutoSize = true;
+            lblTotalTime.Location = new Point(473, 152);
+            lblTotalTime.Name = "lblTotalTime";
+            lblTotalTime.Size = new Size(59, 15);
+            lblTotalTime.TabIndex = 24;
+            lblTotalTime.Text = "Total time";
+            // 
+            // lblStartTime
+            // 
+            lblStartTime.AutoSize = true;
+            lblStartTime.Location = new Point(382, 152);
+            lblStartTime.Name = "lblStartTime";
+            lblStartTime.Size = new Size(60, 15);
+            lblStartTime.TabIndex = 23;
+            lblStartTime.Text = "Start Time";
+            // 
+            // lblProgress
+            // 
+            lblProgress.AutoSize = true;
+            lblProgress.Location = new Point(127, 29);
+            lblProgress.Name = "lblProgress";
+            lblProgress.Size = new Size(55, 15);
+            lblProgress.TabIndex = 22;
+            lblProgress.Text = "Progress:";
+            // 
             // btnCompDir
             // 
             btnCompDir.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnCompDir.Location = new Point(382, 61);
+            btnCompDir.Location = new Point(382, 91);
             btnCompDir.Name = "btnCompDir";
             btnCompDir.Size = new Size(18, 25);
             btnCompDir.TabIndex = 21;
@@ -349,7 +418,7 @@
             // btnGoldDir
             // 
             btnGoldDir.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnGoldDir.Location = new Point(382, 26);
+            btnGoldDir.Location = new Point(382, 56);
             btnGoldDir.Name = "btnGoldDir";
             btnGoldDir.Size = new Size(18, 25);
             btnGoldDir.TabIndex = 20;
@@ -363,6 +432,14 @@
             // groupBox3
             // 
             groupBox3.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            groupBox3.Controls.Add(lblNumPackages);
+            groupBox3.Controls.Add(lblNumModels);
+            groupBox3.Controls.Add(lblNumPorjects);
+            groupBox3.Controls.Add(lblNumReports);
+            groupBox3.Controls.Add(label15);
+            groupBox3.Controls.Add(label14);
+            groupBox3.Controls.Add(label13);
+            groupBox3.Controls.Add(numReports);
             groupBox3.Controls.Add(cbProjects);
             groupBox3.Controls.Add(label1);
             groupBox3.Controls.Add(label4);
@@ -372,12 +449,84 @@
             groupBox3.Controls.Add(label5);
             groupBox3.Controls.Add(cbPackage);
             groupBox3.Controls.Add(label3);
-            groupBox3.Location = new Point(12, 155);
+            groupBox3.Location = new Point(12, 141);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(570, 177);
+            groupBox3.Size = new Size(570, 212);
             groupBox3.TabIndex = 9;
             groupBox3.TabStop = false;
             groupBox3.Text = "Run Single Report";
+            // 
+            // lblNumPackages
+            // 
+            lblNumPackages.AutoSize = true;
+            lblNumPackages.Location = new Point(509, 132);
+            lblNumPackages.Name = "lblNumPackages";
+            lblNumPackages.Size = new Size(13, 15);
+            lblNumPackages.TabIndex = 20;
+            lblNumPackages.Text = "0";
+            // 
+            // lblNumModels
+            // 
+            lblNumModels.AutoSize = true;
+            lblNumModels.Location = new Point(509, 99);
+            lblNumModels.Name = "lblNumModels";
+            lblNumModels.Size = new Size(13, 15);
+            lblNumModels.TabIndex = 19;
+            lblNumModels.Text = "0";
+            // 
+            // lblNumPorjects
+            // 
+            lblNumPorjects.AutoSize = true;
+            lblNumPorjects.Location = new Point(509, 67);
+            lblNumPorjects.Name = "lblNumPorjects";
+            lblNumPorjects.Size = new Size(13, 15);
+            lblNumPorjects.TabIndex = 18;
+            lblNumPorjects.Text = "0";
+            // 
+            // lblNumReports
+            // 
+            lblNumReports.AutoSize = true;
+            lblNumReports.Location = new Point(509, 35);
+            lblNumReports.Name = "lblNumReports";
+            lblNumReports.Size = new Size(13, 15);
+            lblNumReports.TabIndex = 17;
+            lblNumReports.Text = "0";
+            // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Location = new Point(418, 132);
+            label15.Name = "label15";
+            label15.Size = new Size(90, 15);
+            label15.TabIndex = 16;
+            label15.Text = "Package Count:";
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Location = new Point(418, 99);
+            label14.Name = "label14";
+            label14.Size = new Size(80, 15);
+            label14.TabIndex = 15;
+            label14.Text = "Model Count:";
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(418, 67);
+            label13.Name = "label13";
+            label13.Size = new Size(83, 15);
+            label13.TabIndex = 14;
+            label13.Text = "Project Count:";
+            // 
+            // numReports
+            // 
+            numReports.AutoSize = true;
+            numReports.Location = new Point(418, 35);
+            numReports.Name = "numReports";
+            numReports.Size = new Size(81, 15);
+            numReports.TabIndex = 13;
+            numReports.Text = "Report Count:";
             // 
             // groupBox4
             // 
@@ -390,7 +539,7 @@
             groupBox4.Controls.Add(apiKey);
             groupBox4.Location = new Point(12, 10);
             groupBox4.Name = "groupBox4";
-            groupBox4.Size = new Size(570, 128);
+            groupBox4.Size = new Size(570, 119);
             groupBox4.TabIndex = 10;
             groupBox4.TabStop = false;
             groupBox4.Text = "Settings";
@@ -398,17 +547,29 @@
             // label11
             // 
             label11.AutoSize = true;
-            label11.Location = new Point(11, 93);
+            label11.Location = new Point(11, 83);
             label11.Name = "label11";
             label11.Size = new Size(75, 15);
             label11.TabIndex = 19;
             label11.Text = "Environment";
             // 
+            // cbZeroBytes
+            // 
+            cbZeroBytes.AutoSize = true;
+            cbZeroBytes.Checked = true;
+            cbZeroBytes.CheckState = CheckState.Checked;
+            cbZeroBytes.Location = new Point(127, 152);
+            cbZeroBytes.Name = "cbZeroBytes";
+            cbZeroBytes.Size = new Size(143, 19);
+            cbZeroBytes.TabIndex = 27;
+            cbZeroBytes.Text = "Save zero-byte reports";
+            cbZeroBytes.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(598, 579);
+            ClientSize = new Size(598, 691);
             Controls.Add(groupBox4);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
@@ -447,8 +608,8 @@
         private Label label8;
         private Button btnCopy;
         private CheckBox cbHttps;
-        private Button button2;
-        private Button button1;
+        private Button btnCompareToGolden;
+        private Button btnCreateGolden;
         private Label label9;
         private TextBox tbGoldenLoc;
         private ComboBox cbEnv;
@@ -462,5 +623,19 @@
         private Label label11;
         private Button btnGoldDir;
         private Button btnCompDir;
+        private Label label13;
+        private Label numReports;
+        private Label label15;
+        private Label label14;
+        private Label lblNumPackages;
+        private Label lblNumModels;
+        private Label lblNumPorjects;
+        private Label lblNumReports;
+        private Label lblProgress;
+        private Label lblStartTime;
+        private Label lblTotalTime;
+        private Label label12;
+        private CheckBox cbRunEveryPackage;
+        private CheckBox cbZeroBytes;
     }
 }
