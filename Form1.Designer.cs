@@ -56,6 +56,8 @@
             label10 = new Label();
             groupBox1 = new GroupBox();
             groupBox2 = new GroupBox();
+            btnStop = new Button();
+            cbZeroBytes = new CheckBox();
             label12 = new Label();
             cbRunEveryPackage = new CheckBox();
             lblTotalTime = new Label();
@@ -75,7 +77,7 @@
             numReports = new Label();
             groupBox4 = new GroupBox();
             label11 = new Label();
-            cbZeroBytes = new CheckBox();
+            backgroundWorker = new System.ComponentModel.BackgroundWorker();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -328,7 +330,7 @@
             groupBox1.Controls.Add(label7);
             groupBox1.Controls.Add(label8);
             groupBox1.FlatStyle = FlatStyle.Flat;
-            groupBox1.Location = new Point(12, 576);
+            groupBox1.Location = new Point(12, 599);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(574, 100);
             groupBox1.TabIndex = 7;
@@ -338,6 +340,7 @@
             // groupBox2
             // 
             groupBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            groupBox2.Controls.Add(btnStop);
             groupBox2.Controls.Add(cbZeroBytes);
             groupBox2.Controls.Add(label12);
             groupBox2.Controls.Add(cbRunEveryPackage);
@@ -352,12 +355,35 @@
             groupBox2.Controls.Add(label9);
             groupBox2.Controls.Add(tbGoldenLoc);
             groupBox2.Controls.Add(label10);
-            groupBox2.Location = new Point(12, 368);
+            groupBox2.Location = new Point(12, 378);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(570, 184);
+            groupBox2.Size = new Size(570, 197);
             groupBox2.TabIndex = 8;
             groupBox2.TabStop = false;
             groupBox2.Text = "QA Golden Compare";
+            // 
+            // btnStop
+            // 
+            btnStop.Enabled = false;
+            btnStop.Location = new Point(416, 123);
+            btnStop.Name = "btnStop";
+            btnStop.Size = new Size(144, 23);
+            btnStop.TabIndex = 28;
+            btnStop.Text = "Stop";
+            btnStop.UseVisualStyleBackColor = true;
+            btnStop.Click += btnStop_Click;
+            // 
+            // cbZeroBytes
+            // 
+            cbZeroBytes.AutoSize = true;
+            cbZeroBytes.Checked = true;
+            cbZeroBytes.CheckState = CheckState.Checked;
+            cbZeroBytes.Location = new Point(127, 152);
+            cbZeroBytes.Name = "cbZeroBytes";
+            cbZeroBytes.Size = new Size(143, 19);
+            cbZeroBytes.TabIndex = 27;
+            cbZeroBytes.Text = "Save zero-byte reports";
+            cbZeroBytes.UseVisualStyleBackColor = true;
             // 
             // label12
             // 
@@ -381,7 +407,7 @@
             // lblTotalTime
             // 
             lblTotalTime.AutoSize = true;
-            lblTotalTime.Location = new Point(473, 152);
+            lblTotalTime.Location = new Point(442, 170);
             lblTotalTime.Name = "lblTotalTime";
             lblTotalTime.Size = new Size(59, 15);
             lblTotalTime.TabIndex = 24;
@@ -390,7 +416,7 @@
             // lblStartTime
             // 
             lblStartTime.AutoSize = true;
-            lblStartTime.Location = new Point(382, 152);
+            lblStartTime.Location = new Point(340, 170);
             lblStartTime.Name = "lblStartTime";
             lblStartTime.Size = new Size(60, 15);
             lblStartTime.TabIndex = 23;
@@ -449,7 +475,7 @@
             groupBox3.Controls.Add(label5);
             groupBox3.Controls.Add(cbPackage);
             groupBox3.Controls.Add(label3);
-            groupBox3.Location = new Point(12, 141);
+            groupBox3.Location = new Point(12, 143);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(570, 212);
             groupBox3.TabIndex = 9;
@@ -553,23 +579,17 @@
             label11.TabIndex = 19;
             label11.Text = "Environment";
             // 
-            // cbZeroBytes
+            // backgroundWorker
             // 
-            cbZeroBytes.AutoSize = true;
-            cbZeroBytes.Checked = true;
-            cbZeroBytes.CheckState = CheckState.Checked;
-            cbZeroBytes.Location = new Point(127, 152);
-            cbZeroBytes.Name = "cbZeroBytes";
-            cbZeroBytes.Size = new Size(143, 19);
-            cbZeroBytes.TabIndex = 27;
-            cbZeroBytes.Text = "Save zero-byte reports";
-            cbZeroBytes.UseVisualStyleBackColor = true;
+            backgroundWorker.DoWork += backgroundWorker_DoWork;
+            backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
+            backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(598, 691);
+            ClientSize = new Size(598, 714);
             Controls.Add(groupBox4);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
@@ -637,5 +657,7 @@
         private Label label12;
         private CheckBox cbRunEveryPackage;
         private CheckBox cbZeroBytes;
+        private Button btnStop;
+        private System.ComponentModel.BackgroundWorker backgroundWorker;
     }
 }

@@ -1,11 +1,14 @@
 using System;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO.Packaging;
+using System.Reflection;
 using System.Security.Policy;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using OpenGTP.Properties;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OpenGTP
 {
@@ -16,11 +19,22 @@ namespace OpenGTP
         private List<NamedId> _models = new List<NamedId>();
         private List<NamedId> _packages = new List<NamedId>();
         private int _minTimeout = 45; // give things this long to run
+        private CancellationTokenSource _cts = new CancellationTokenSource();
 
         private string http
         {
             get
             {
+                var isChecked = false;
+                if (cbHttps.InvokeRequired)
+                {
+                    this.Invoke(new System.Windows.Forms.MethodInvoker(() => isChecked = cbHttps.Checked));
+                }
+                else
+                {
+                    isChecked = cbHttps.Checked;
+                }
+
                 if (cbHttps.Checked)
                 {
                     return "https";
@@ -28,27 +42,49 @@ namespace OpenGTP
                 return "http";
             }
         }
+
+        private string EnvLower
+        {
+            get
+            {
+                var env = string.Empty;
+                if (cbEnv.InvokeRequired)
+                {                    
+                    this.Invoke(new System.Windows.Forms.MethodInvoker(() => env = cbEnv.Text.ToLower()));
+                }
+                else
+                {
+                    env = cbEnv.Text.ToLower();
+                }
+                return env;
+            }
+        }
+
         private string URLRoot
         {
             get
             {
-                if (cbEnv.Text.ToLower().StartsWith("local"))
+                var env = EnvLower;
+                if (env.StartsWith("local"))
                 {
                     return $"{http}://local";
                 }
 
-                if (cbEnv.Text.ToLower().StartsWith("prod"))
+                if (env.StartsWith("prod"))
                 {
                     return $"{http}://api.gtpstratus.com";
                 }
 
-                return $"{http}://api-{cbEnv.Text.ToLower()}.gtpstratus.com";
+                return $"{http}://api-{env}.gtpstratus.com";
             }
         }
 
         public Form1()
         {
+            _cts = new CancellationTokenSource();
             InitializeComponent();
+            backgroundWorker.WorkerReportsProgress = true;
+            backgroundWorker.WorkerSupportsCancellation = true;
             apiKey.Text = (string)Settings.Default["AppKey"];
             tbCompLoc.Text = (string)Settings.Default["CompLoc"];
             tbGoldenLoc.Text = (string)Settings.Default["GoldenLoc"];
@@ -182,16 +218,52 @@ namespace OpenGTP
             return success;
         }
 
+        private void ComboBoxAdd(ComboBox cb, string? value)
+        {
+            if (value != null)
+            {
+                if (cb.InvokeRequired)
+                {
+                    this.Invoke(new System.Windows.Forms.MethodInvoker(() =>
+                    {
+                        cb.Items.Add(value);
+                    }));
+                }
+                else
+                {
+                    cb.Items.Add(value);
+                }
+            }
+        }
+
+        private void ClearComboBox(ComboBox cb)
+        {
+            if (cb.InvokeRequired)
+            {
+                this.Invoke(new System.Windows.Forms.MethodInvoker(() => { 
+                    cb.Items.Clear();
+                    cb.Items.Add(string.Empty);
+                    cb.SelectedIndex = 0;
+                    cb.Refresh();
+                }));
+            }
+            else
+            {
+                cb.Items.Clear();
+                cb.Items.Add(string.Empty);
+                cb.SelectedIndex = 0;
+                cb.Refresh();
+            }
+
+        }
         /// <summary>
         /// Get a list of Models from STRATUS open API and put each one in the models dropdown list
         /// </summary>
         private bool GetModels(string projectId, bool showError)
         {
             var success = true;
-            cbModels.Items.Clear();
-            cbModels.Items.Add(string.Empty);
-            cbModels.SelectedIndex = 0;
-            cbModels.Refresh();
+            ClearComboBox(cbModels);
+            SetLabel(lblNumModels, "0");
             _models = new List<NamedId>();
             var key = apiKey.Text;
             var client = new HttpClient();
@@ -214,7 +286,7 @@ namespace OpenGTP
                             string name = (string)item["name"];
                             string id = (string)item["id"];
                             _models.Add(new NamedId() { name = name, id = id });
-                            cbModels.Items.Add(name);
+                            ComboBoxAdd(cbModels, name);
                         }
                     }
                 }
@@ -228,7 +300,7 @@ namespace OpenGTP
                 }
             }
 
-            lblNumModels.Text = $"{_models.Count}";
+            SetLabel(lblNumModels, $"{_models.Count}");
             return success;
         }
 
@@ -238,10 +310,7 @@ namespace OpenGTP
         private bool GetPackages(string modelId, bool showError)
         {
             var success = true;
-            cbPackage.Items.Clear();
-            cbPackage.Items.Add(string.Empty);
-            cbPackage.SelectedIndex = 0;
-            cbPackage.Refresh();
+            ClearComboBox(cbPackage);
             _packages = new List<NamedId>();
             var key = apiKey.Text;
             var client = new HttpClient();
@@ -265,7 +334,7 @@ namespace OpenGTP
                             string name = (string)item["name"];
                             string id = (string)item["id"];
                             _packages.Add(new NamedId() { name = name, id = id });
-                            cbPackage.Items.Add(name);
+                            ComboBoxAdd(cbPackage, name);
                         }
                     }
                 }
@@ -279,7 +348,7 @@ namespace OpenGTP
                 }
             }
 
-            lblNumPackages.Text = $"{_packages.Count}";
+            SetLabel(lblNumPackages, $"{_packages.Count}");
             return success;
         }
 
@@ -364,7 +433,7 @@ namespace OpenGTP
         /// Run the package/dashboard report based on current report, project, model and pacakge
         /// Put the resulting data into a new window form
         /// </summary>
-        private string? RunReport(bool showInDialog = true, string? url = null)
+        private async Task<string?> RunReportAsync(bool showInDialog = true, string? url = null)
         {
             var csv = string.Empty;
             var curr = Cursor.Current;
@@ -381,8 +450,8 @@ namespace OpenGTP
 
             try
             {
-                var json = client.GetAsync(url).Result;
-                csv = json.Content.ReadAsStringAsync().Result;
+                var json = await client.GetAsync(url);
+                csv = await json.Content.ReadAsStringAsync();
                 Cursor.Current = curr;
                 if (showInDialog)
                 {
@@ -439,7 +508,7 @@ namespace OpenGTP
                 MessageBox.Show("You must specify an OpenAPI Key.", "STRATUS AppKey");
                 return;
             }
-            RunReport(true);
+            RunReportAsync(true);
         }
 
         private void OnReportChanged(object sender, EventArgs e)
@@ -516,7 +585,19 @@ namespace OpenGTP
             }
         }
 
-        private void RunAllReports(string saveToPath, bool writeZeroByteFiles)
+        private void SetLabel(Label lbl, string progress)
+        {
+            if (lbl.InvokeRequired)
+            {
+                this.Invoke(new System.Windows.Forms.MethodInvoker(() => lbl.Text = progress));
+            }
+            else
+            {
+                lbl.Text = progress;
+            }
+        }
+
+        private void RunAllReports(string saveToPath, bool writeZeroByteFiles, BackgroundWorker worker, DoWorkEventArgs e)
         {
             var reports = 0;
             var projects = 0;
@@ -548,24 +629,34 @@ namespace OpenGTP
 
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            lblStartTime.Text = $"Started {DateTime.Now.ToString("HH:mm")}";
-            lblTotalTime.Text = "Running...";
+            SetLabel(lblStartTime, $"Started {DateTime.Now.ToString("HH:mm")}");
+            SetLabel(lblTotalTime, "Running...");
 
             // Loop through all reports, all projects, all models, all packages
             // and create a golden file for each one
             foreach (var report in _reports)
             {
+                if (worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    break;
+                }
                 reports++;
                 projects = 0;
                 models = 0;
                 packages = 0;
-                lblProgress.Text = $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})";
+                SetLabel(lblProgress, $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
                 foreach (var project in _projects)
                 {
+                    if (worker.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        break;
+                    }
                     projects++;
                     models = 0;
                     packages = 0;
-                    lblProgress.Text = $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})";
+                    SetLabel(lblProgress, $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
                     if (!GetModels(project.id, false))
                     {
                         errors++;
@@ -573,10 +664,15 @@ namespace OpenGTP
 
                     foreach (var model in _models)
                     {
+                        if (worker.CancellationPending)
+                        {
+                            e.Cancel = true;
+                            break;
+                        }
                         models++;
-                        lblProgress.Text = $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})";
+                        SetLabel(lblProgress, $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
                         var url = $"{URLRoot}/v1/package/dashboard?projectId={project.id}&modelId={model.id}&reportId={report.id}";
-                        var csv = RunReport(false, url);
+                        var csv = RunReportAsync(false, url).Result;
                         if (!string.IsNullOrEmpty(csv) || writeZeroByteFiles)
                         {
                             var fname = $"{saveToPath}\\{Clean(report.name)}{Clean(project.name)}{Clean(model.name)}.csv";
@@ -589,10 +685,15 @@ namespace OpenGTP
                             GetPackages(model.id, false);
                             foreach (var package in _packages)
                             {
+                                if (worker.CancellationPending)
+                                {
+                                    e.Cancel = true;
+                                    break;
+                                }
                                 packages++;
-                                lblProgress.Text = $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Package {packages} of {_packages.Count}. *({errors})";
+                                SetLabel(lblProgress, $"Report {reports} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Package {packages} of {_packages.Count}. *({errors})");
                                 url = $"{URLRoot}/v1/package/dashboard?projectId={project.id}&packageId={package.id}&modelId={model.id}&reportId={report.id}";
-                                csv = RunReport(false, url);
+                                csv = RunReportAsync(false, url).Result;
                                 if (!string.IsNullOrEmpty(csv) || writeZeroByteFiles)
                                 {
                                     var fname = $"{saveToPath}\\{Clean(report.name)}{Clean(project.name)}{Clean(model.name)}{Clean(package.name)}.csv";
@@ -605,17 +706,25 @@ namespace OpenGTP
             }
 
             timer.Stop();
-            lblTotalTime.Text = $"{timer.Elapsed.TotalHours} hours";
+            SetLabel(lblTotalTime, $"{timer.Elapsed.TotalHours:F2} hours");
         }
 
         private void btnCompareToGolden_Click(object sender, EventArgs e)
         {
-            RunAllReports(tbCompLoc.Text, cbZeroBytes.Checked);
+            if (!backgroundWorker.IsBusy)
+            {
+                btnStop.Enabled = true;
+                backgroundWorker.RunWorkerAsync(1);
+            }
         }
 
         private void button_CreateGolden(object sender, EventArgs e)
         {
-            RunAllReports(tbGoldenLoc.Text, cbZeroBytes.Checked); 
+            if (!backgroundWorker.IsBusy)
+            {
+                btnStop.Enabled = true;
+                backgroundWorker.RunWorkerAsync(2);
+            }
         }
 
         private string Clean(string s)
@@ -630,5 +739,25 @@ namespace OpenGTP
 
         }
 
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            backgroundWorker.CancelAsync();
+            _cts.Cancel();
+        }
+
+        private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            RunAllReports(tbGoldenLoc.Text, cbZeroBytes.Checked, backgroundWorker, e);
+        }
+
+        private void backgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+
+        }
     }
 }
