@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 using System.Text.Json;
+using UIHelper;
 
 namespace OpenGTP
 {
@@ -77,8 +78,8 @@ namespace OpenGTP
         private bool GetModels(string projectId, bool showError)
         {
             var success = true;
-            ClearComboBox(cbModels);
-            SetLabel(lblNumModels, "0");
+            Safe.ClearComboBox(this, cbModels);
+            Safe.SetLabel(this, lblNumModels, "0");
             _models = new List<NamedId>();
             var key = apiKey.Text;
             var client = new HttpClient();
@@ -101,7 +102,7 @@ namespace OpenGTP
                             string name = (string)item["name"];
                             string id = (string)item["id"];
                             _models.Add(new NamedId() { name = name, id = id });
-                            ComboBoxAdd(cbModels, name);
+                            Safe.ComboBoxAdd(this, cbModels, name);
                         }
                     }
                 }
@@ -115,7 +116,7 @@ namespace OpenGTP
                 }
             }
 
-            SetLabel(lblNumModels, $"{_models.Count}");
+            Safe.SetLabel(this, lblNumModels, $"{_models.Count}");
             return success;
         }
 
@@ -125,7 +126,7 @@ namespace OpenGTP
         private bool GetPackages(string modelId, bool showError)
         {
             var success = true;
-            ClearComboBox(cbPackage);
+            Safe.ClearComboBox(this, cbPackage);
             _packages = new List<NamedId>();
             var key = apiKey.Text;
             var client = new HttpClient();
@@ -149,7 +150,7 @@ namespace OpenGTP
                             string name = (string)item["name"];
                             string id = (string)item["id"];
                             _packages.Add(new NamedId() { name = name, id = id });
-                            ComboBoxAdd(cbPackage, name);
+                            Safe.ComboBoxAdd(this, cbPackage, name);
                         }
                     }
                 }
@@ -163,7 +164,7 @@ namespace OpenGTP
                 }
             }
 
-            SetLabel(lblNumPackages, $"{_packages.Count}");
+            Safe.SetLabel(this, lblNumPackages, $"{_packages.Count}");
             return success;
         }
 
@@ -265,6 +266,7 @@ namespace OpenGTP
                 }
             }
             lblNumPorjects.Text = $"{_projects.Count}";
+            cbtProjects.Init(_projects, "Projects to use", "SelectedProjects");
             return success;
         }
 
@@ -316,10 +318,10 @@ namespace OpenGTP
 
         private List<string> GetCheckedReports()
         {
-            List<string> ret;
+            List<string> ret = [];
             if (cbListReports.InvokeRequired)
             {
-                return (List<string>)this.Invoke(new System.Windows.Forms.MethodInvoker(() =>
+                this.Invoke(new MethodInvoker(() =>
                 {
                     ret = cbListReports.CheckedItems.Cast<string>().ToList();
                 }));
@@ -363,8 +365,8 @@ namespace OpenGTP
 
             Stopwatch timer = new ();
             timer.Start();
-            SetLabel(lblStartTime, $"Started {DateTime.Now.ToString("HH:mm")}");
-            SetLabel(lblTotalTime, "Running...");
+            Safe.SetLabel(this, lblStartTime, $"Started {DateTime.Now.ToString("HH:mm")}");
+            Safe.SetLabel(this, lblTotalTime, "Running...");
             var checkedReports = GetCheckedReports();
 
             // Loop through all reports, all projects, all models, all packages
@@ -384,7 +386,7 @@ namespace OpenGTP
                 projects = 0;
                 models = 0;
                 packages = 0;
-                SetLabel(lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
+                Safe.SetLabel(this, lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
                 foreach (var project in _projects)
                 {
                     if (worker.CancellationPending)
@@ -395,7 +397,7 @@ namespace OpenGTP
                     projects++;
                     models = 0;
                     packages = 0;
-                    SetLabel(lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
+                    Safe.SetLabel(this, lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
                     if (!GetModels(project.id, false))
                     {
                         errors++;
@@ -409,7 +411,7 @@ namespace OpenGTP
                             break;
                         }
                         models++;
-                        SetLabel(lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
+                        Safe.SetLabel(this, lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
                         var url = $"{URLRoot}/v1/package/dashboard?projectId={project.id}&modelId={model.id}&reportId={report.id}";
                         Write(url, writeZeroByteFiles, saveToPath, report.name, project.name, model.name, string.Empty);
 
@@ -425,7 +427,7 @@ namespace OpenGTP
                                     break;
                                 }
                                 packages++;
-                                SetLabel(lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Package {packages} of {_packages.Count}. *({errors})");
+                                Safe.SetLabel(this, lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Package {packages} of {_packages.Count}. *({errors})");
                                 url = $"{URLRoot}/v1/package/dashboard?projectId={project.id}&packageId={package.id}&modelId={model.id}&reportId={report.id}";
                                 Write(url, writeZeroByteFiles, saveToPath, report.name, project.name, model.name, package.name);
                             }
@@ -435,7 +437,7 @@ namespace OpenGTP
             }
 
             timer.Stop();
-            SetLabel(lblTotalTime, $"{timer.Elapsed.TotalHours:F2} hours");
+            Safe.SetLabel(this, lblTotalTime, $"{timer.Elapsed.TotalHours:F2} hours");
         }
 
         private void Write(string url, bool writeZeroByteFiles, string saveToPath, string report, string project, string model, string package)

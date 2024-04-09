@@ -1,4 +1,6 @@
 ﻿
+using UIHelper;
+
 namespace OpenGTP
 {
     public partial class Form1 : Form
@@ -40,15 +42,8 @@ namespace OpenGTP
             {
                 pbProgressBar.Visible = false;
             }
-            if (btnStop.InvokeRequired)
-            {
-                btnStop.Invoke(new Action(() => pbProgressBar.Visible = false));
-            }
-            else
-            {
-                btnStop.Visible = false;
-            }
 
+            Safe.SetButtonVisible(this, btnStop, false);
         }
 
     }

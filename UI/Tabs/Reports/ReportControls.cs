@@ -1,4 +1,5 @@
 ﻿using OpenGTP.Properties;
+using UIHelper;
 
 namespace OpenGTP
 {
@@ -124,9 +125,9 @@ namespace OpenGTP
 
         private void SaveReportPaths()
         {
-            var goldPath = GetTextBoxText(tbGoldenLoc);
+            var goldPath = Safe.GetTextBoxText(this, tbGoldenLoc);
             Settings.Default["GoldenLoc"] = goldPath;
-            var compPath = GetTextBoxText(tbCompLoc);
+            var compPath = Safe.GetTextBoxText(this, tbCompLoc);
             Settings.Default["CompLoc"] = compPath;
             Settings.Default.Save();
         }

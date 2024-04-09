@@ -1,4 +1,5 @@
 using OpenGTP.Properties;
+using UIHelper;
 
 namespace OpenGTP
 {
@@ -13,7 +14,7 @@ namespace OpenGTP
                 var isChecked = false;
                 if (cbHttps.InvokeRequired)
                 {
-                    this.Invoke(new System.Windows.Forms.MethodInvoker(() => isChecked = cbHttps.Checked));
+                    this.Invoke(new MethodInvoker(() => isChecked = cbHttps.Checked));
                 }
                 else
                 {
@@ -32,15 +33,7 @@ namespace OpenGTP
         {
             get
             {
-                var env = string.Empty;
-                if (cbEnv.InvokeRequired)
-                {
-                    this.Invoke(new System.Windows.Forms.MethodInvoker(() => env = cbEnv.Text.ToLower()));
-                }
-                else
-                {
-                    env = cbEnv.Text.ToLower();
-                }
+                var env = Safe.GetComboBoxText(this, cbEnv)?.ToLower() ?? string.Empty;
                 return env;
             }
         }
@@ -80,46 +73,6 @@ namespace OpenGTP
             }
         }
 
-        private void ComboBoxAdd(ComboBox cb, string? value)
-        {
-            if (value != null)
-            {
-                if (cb.InvokeRequired)
-                {
-                    this.Invoke(new System.Windows.Forms.MethodInvoker(() =>
-                    {
-                        cb.Items.Add(value);
-                    }));
-                }
-                else
-                {
-                    cb.Items.Add(value);
-                }
-            }
-        }
-
-        private void ClearComboBox(ComboBox cb)
-        {
-            if (cb.InvokeRequired)
-            {
-                this.Invoke(new System.Windows.Forms.MethodInvoker(() =>
-                {
-                    cb.Items.Clear();
-                    cb.Items.Add(string.Empty);
-                    cb.SelectedIndex = 0;
-                    cb.Refresh();
-                }));
-            }
-            else
-            {
-                cb.Items.Clear();
-                cb.Items.Add(string.Empty);
-                cb.SelectedIndex = 0;
-                cb.Refresh();
-            }
-
-        }
-
         /// <summary>
         /// Build a URL with proper format, using ? and & signs as needed
         /// </summary>
@@ -140,37 +93,6 @@ namespace OpenGTP
             return url;
         }
 
-        private void SetLabel(Label lbl, string progress)
-        {
-            try
-            {
-                if (lbl.InvokeRequired)
-                {
-                    this.Invoke(new System.Windows.Forms.MethodInvoker(() => lbl.Text = progress));
-                }
-                else
-                {
-                    lbl.Text = progress;
-                }
-            }
-            catch
-            {
-            }
-        }
-
-        private string GetTextBoxText(TextBox tb)
-        {
-            string text = string.Empty;
-            if (tb.InvokeRequired)
-            {
-                this.Invoke(new System.Windows.Forms.MethodInvoker(() => text = tb.Text));
-            }
-            else
-            {
-                text = tb.Text;
-            }
-            return text;
-        }
 
         private string Clean(string s)
         {

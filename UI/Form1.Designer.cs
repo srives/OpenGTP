@@ -83,15 +83,16 @@
             label10 = new Label();
             tabSelectReportOptions = new TabControl();
             ReportSelectionTab = new TabPage();
+            cbHideUnused = new CheckBox();
             btnToggleAllOn = new Button();
             btnToggleAllOff = new Button();
             btnToggleReportSelection = new Button();
             label12 = new Label();
             cbListReports = new CheckedListBox();
             tabSelectProjects = new TabPage();
+            cbtProjects = new CheckBoxListToggle();
             tabPage2 = new TabPage();
             label16 = new Label();
-            cbHideUnused = new CheckBox();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -100,6 +101,7 @@
             groupBox2.SuspendLayout();
             tabSelectReportOptions.SuspendLayout();
             ReportSelectionTab.SuspendLayout();
+            tabSelectProjects.SuspendLayout();
             SuspendLayout();
             // 
             // openFileDialog1
@@ -706,6 +708,18 @@
             ReportSelectionTab.TabIndex = 0;
             ReportSelectionTab.Text = "Select Reports";
             // 
+            // cbHideUnused
+            // 
+            cbHideUnused.AutoSize = true;
+            cbHideUnused.ForeColor = Color.LawnGreen;
+            cbHideUnused.Location = new Point(292, 15);
+            cbHideUnused.Name = "cbHideUnused";
+            cbHideUnused.Size = new Size(94, 19);
+            cbHideUnused.TabIndex = 34;
+            cbHideUnused.Text = "Hide Unused";
+            cbHideUnused.UseVisualStyleBackColor = true;
+            cbHideUnused.CheckedChanged += cbHideUnused_CheckedChanged;
+            // 
             // btnToggleAllOn
             // 
             btnToggleAllOn.FlatStyle = FlatStyle.Flat;
@@ -768,6 +782,7 @@
             // 
             // tabSelectProjects
             // 
+            tabSelectProjects.Controls.Add(cbtProjects);
             tabSelectProjects.Location = new Point(4, 27);
             tabSelectProjects.Name = "tabSelectProjects";
             tabSelectProjects.Padding = new Padding(3);
@@ -775,6 +790,14 @@
             tabSelectProjects.TabIndex = 1;
             tabSelectProjects.Text = "Select Projects";
             tabSelectProjects.UseVisualStyleBackColor = true;
+            // 
+            // cbtProjects
+            // 
+            cbtProjects.BackColor = Color.Black;
+            cbtProjects.Location = new Point(2, 0);
+            cbtProjects.Name = "cbtProjects";
+            cbtProjects.Size = new Size(409, 702);
+            cbtProjects.TabIndex = 0;
             // 
             // tabPage2
             // 
@@ -793,18 +816,6 @@
             label16.Name = "label16";
             label16.Size = new Size(0, 15);
             label16.TabIndex = 12;
-            // 
-            // cbHideUnused
-            // 
-            cbHideUnused.AutoSize = true;
-            cbHideUnused.ForeColor = Color.LawnGreen;
-            cbHideUnused.Location = new Point(292, 15);
-            cbHideUnused.Name = "cbHideUnused";
-            cbHideUnused.Size = new Size(94, 19);
-            cbHideUnused.TabIndex = 34;
-            cbHideUnused.Text = "Hide Unused";
-            cbHideUnused.UseVisualStyleBackColor = true;
-            cbHideUnused.CheckedChanged += cbHideUnused_CheckedChanged;
             // 
             // Form1
             // 
@@ -829,6 +840,7 @@
             tabSelectReportOptions.ResumeLayout(false);
             ReportSelectionTab.ResumeLayout(false);
             ReportSelectionTab.PerformLayout();
+            tabSelectProjects.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -897,5 +909,6 @@
         private Button btnToggleReportSelection;
         private Label label16;
         private CheckBox cbHideUnused;
+        private CheckBoxListToggle cbtProjects;
     }
 }
