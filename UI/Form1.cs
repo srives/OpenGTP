@@ -158,6 +158,20 @@ namespace OpenGTP
             }
         }
 
+        private string GetTextBoxText(TextBox tb)
+        {
+            string text = string.Empty;
+            if (tb.InvokeRequired)
+            {
+                this.Invoke(new System.Windows.Forms.MethodInvoker(() => text = tb.Text));
+            }
+            else
+            {
+                text = tb.Text;
+            }
+            return text;
+        }
+
         private string Clean(string s)
         {
             string ret = s.Replace(" ", "-").Replace("\t", "").Replace("\n", "").Replace("\r", "").Replace("\0", "")
@@ -167,8 +181,6 @@ namespace OpenGTP
                     .Replace("\"", "-").Replace("'", "").Replace("`", "").Replace("~", "-").Replace("+", "")
                     .Replace("<", "").Replace(">", "").Replace("=", "").Replace("--", "-").Replace("--", "-").Replace("--", "-");
             return $"[{ret}]_";
-
-        }
-
+        }     
     }
 }

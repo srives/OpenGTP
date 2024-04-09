@@ -82,5 +82,27 @@ namespace OpenGTP.Properties {
                 this["Env"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection SelectedReports {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["SelectedReports"]));
+            }
+            set {
+                this["SelectedReports"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection SelectedProjects {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["SelectedProjects"]));
+            }
+            set {
+                this["SelectedProjects"] = value;
+            }
+        }
     }
 }

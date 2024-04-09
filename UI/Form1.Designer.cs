@@ -47,7 +47,7 @@
             label4 = new Label();
             cbModels = new ComboBox();
             cbReports = new ComboBox();
-            btnFetch = new Button();
+            btnRunOneReport = new Button();
             label5 = new Label();
             cbPackage = new ComboBox();
             label3 = new Label();
@@ -66,7 +66,7 @@
             label8 = new Label();
             groupBox2 = new GroupBox();
             pbProgressBar = new ProgressBar();
-            button1 = new Button();
+            btnDoCompare = new Button();
             btnStop = new Button();
             cbZeroBytes = new CheckBox();
             cbRunEveryPackage = new CheckBox();
@@ -81,13 +81,25 @@
             label9 = new Label();
             tbGoldenLoc = new TextBox();
             label10 = new Label();
+            tabSelectReportOptions = new TabControl();
+            ReportSelectionTab = new TabPage();
+            btnToggleAllOn = new Button();
+            btnToggleAllOff = new Button();
+            btnToggleReportSelection = new Button();
+            label12 = new Label();
+            cbListReports = new CheckedListBox();
+            tabSelectProjects = new TabPage();
             tabPage2 = new TabPage();
+            label16 = new Label();
+            cbHideUnused = new CheckBox();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBox4.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
+            tabSelectReportOptions.SuspendLayout();
+            ReportSelectionTab.SuspendLayout();
             SuspendLayout();
             // 
             // openFileDialog1
@@ -112,17 +124,18 @@
             // 
             // tabPage1
             // 
+            tabPage1.BackColor = Color.Black;
             tabPage1.Controls.Add(groupBox3);
             tabPage1.Controls.Add(groupBox4);
             tabPage1.Controls.Add(groupBox1);
             tabPage1.Controls.Add(groupBox2);
+            tabPage1.Controls.Add(tabSelectReportOptions);
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
             tabPage1.Size = new Size(1016, 723);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Reports";
-            tabPage1.UseVisualStyleBackColor = true;
             // 
             // groupBox3
             // 
@@ -140,11 +153,12 @@
             groupBox3.Controls.Add(label4);
             groupBox3.Controls.Add(cbModels);
             groupBox3.Controls.Add(cbReports);
-            groupBox3.Controls.Add(btnFetch);
+            groupBox3.Controls.Add(btnRunOneReport);
             groupBox3.Controls.Add(label5);
             groupBox3.Controls.Add(cbPackage);
             groupBox3.Controls.Add(label3);
-            groupBox3.Location = new Point(27, 143);
+            groupBox3.ForeColor = Color.LawnGreen;
+            groupBox3.Location = new Point(15, 160);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(570, 212);
             groupBox3.TabIndex = 12;
@@ -225,6 +239,9 @@
             // 
             // cbProjects
             // 
+            cbProjects.BackColor = Color.Black;
+            cbProjects.FlatStyle = FlatStyle.Flat;
+            cbProjects.ForeColor = Color.LawnGreen;
             cbProjects.FormattingEnabled = true;
             cbProjects.Location = new Point(127, 64);
             cbProjects.Name = "cbProjects";
@@ -252,6 +269,9 @@
             // 
             // cbModels
             // 
+            cbModels.BackColor = Color.Black;
+            cbModels.FlatStyle = FlatStyle.Flat;
+            cbModels.ForeColor = Color.LawnGreen;
             cbModels.FormattingEnabled = true;
             cbModels.Location = new Point(127, 96);
             cbModels.Name = "cbModels";
@@ -261,6 +281,9 @@
             // 
             // cbReports
             // 
+            cbReports.BackColor = Color.Black;
+            cbReports.FlatStyle = FlatStyle.Flat;
+            cbReports.ForeColor = Color.LawnGreen;
             cbReports.FormattingEnabled = true;
             cbReports.Location = new Point(127, 30);
             cbReports.Name = "cbReports";
@@ -268,16 +291,17 @@
             cbReports.TabIndex = 2;
             cbReports.SelectedIndexChanged += OnReportChanged;
             // 
-            // btnFetch
+            // btnRunOneReport
             // 
-            btnFetch.Enabled = false;
-            btnFetch.Location = new Point(416, 172);
-            btnFetch.Name = "btnFetch";
-            btnFetch.Size = new Size(64, 23);
-            btnFetch.TabIndex = 12;
-            btnFetch.Text = "Run One";
-            btnFetch.UseVisualStyleBackColor = true;
-            btnFetch.Click += OnRunOneReport;
+            btnRunOneReport.FlatStyle = FlatStyle.Flat;
+            btnRunOneReport.Location = new Point(416, 172);
+            btnRunOneReport.Name = "btnRunOneReport";
+            btnRunOneReport.Size = new Size(64, 23);
+            btnRunOneReport.TabIndex = 12;
+            btnRunOneReport.Text = "Run One";
+            btnRunOneReport.UseVisualStyleBackColor = true;
+            btnRunOneReport.Visible = false;
+            btnRunOneReport.Click += OnRunOneReport;
             // 
             // label5
             // 
@@ -290,6 +314,9 @@
             // 
             // cbPackage
             // 
+            cbPackage.BackColor = Color.Black;
+            cbPackage.FlatStyle = FlatStyle.Flat;
+            cbPackage.ForeColor = Color.LawnGreen;
             cbPackage.FormattingEnabled = true;
             cbPackage.Location = new Point(127, 131);
             cbPackage.Name = "cbPackage";
@@ -314,9 +341,10 @@
             groupBox4.Controls.Add(label2);
             groupBox4.Controls.Add(label6);
             groupBox4.Controls.Add(apiKey);
-            groupBox4.Location = new Point(27, 6);
+            groupBox4.ForeColor = Color.LawnGreen;
+            groupBox4.Location = new Point(15, 6);
             groupBox4.Name = "groupBox4";
-            groupBox4.Size = new Size(570, 119);
+            groupBox4.Size = new Size(570, 136);
             groupBox4.TabIndex = 11;
             groupBox4.TabStop = false;
             groupBox4.Text = "Settings";
@@ -324,6 +352,7 @@
             // label11
             // 
             label11.AutoSize = true;
+            label11.ForeColor = Color.LawnGreen;
             label11.Location = new Point(11, 83);
             label11.Name = "label11";
             label11.Size = new Size(75, 15);
@@ -332,6 +361,9 @@
             // 
             // cbEnv
             // 
+            cbEnv.BackColor = Color.Black;
+            cbEnv.FlatStyle = FlatStyle.Flat;
+            cbEnv.ForeColor = Color.LawnGreen;
             cbEnv.FormattingEnabled = true;
             cbEnv.Items.AddRange(new object[] { "QA", "PROD", "CI", "RC", "Staging", "local" });
             cbEnv.Location = new Point(127, 78);
@@ -346,6 +378,7 @@
             cbHttps.CheckAlign = ContentAlignment.MiddleRight;
             cbHttps.Checked = true;
             cbHttps.CheckState = CheckState.Checked;
+            cbHttps.ForeColor = Color.LawnGreen;
             cbHttps.Location = new Point(416, 80);
             cbHttps.Name = "cbHttps";
             cbHttps.Size = new Size(53, 19);
@@ -356,17 +389,20 @@
             // 
             // btnOpenAPI
             // 
+            btnOpenAPI.BackColor = Color.Black;
+            btnOpenAPI.FlatStyle = FlatStyle.Flat;
             btnOpenAPI.Location = new Point(416, 37);
             btnOpenAPI.Name = "btnOpenAPI";
             btnOpenAPI.Size = new Size(64, 23);
             btnOpenAPI.TabIndex = 1;
             btnOpenAPI.Text = "Use Key";
-            btnOpenAPI.UseVisualStyleBackColor = true;
+            btnOpenAPI.UseVisualStyleBackColor = false;
             btnOpenAPI.Click += btnOpenAPI_Click;
             // 
             // label2
             // 
             label2.AutoSize = true;
+            label2.ForeColor = Color.LawnGreen;
             label2.Location = new Point(11, 40);
             label2.Name = "label2";
             label2.Size = new Size(79, 15);
@@ -376,6 +412,7 @@
             // label6
             // 
             label6.AutoSize = true;
+            label6.ForeColor = Color.LawnGreen;
             label6.Location = new Point(125, 19);
             label6.Name = "label6";
             label6.Size = new Size(239, 15);
@@ -384,6 +421,9 @@
             // 
             // apiKey
             // 
+            apiKey.BackColor = Color.Black;
+            apiKey.BorderStyle = BorderStyle.FixedSingle;
+            apiKey.ForeColor = Color.LawnGreen;
             apiKey.Location = new Point(127, 37);
             apiKey.Name = "apiKey";
             apiKey.Size = new Size(283, 23);
@@ -397,7 +437,8 @@
             groupBox1.Controls.Add(label7);
             groupBox1.Controls.Add(label8);
             groupBox1.FlatStyle = FlatStyle.Flat;
-            groupBox1.Location = new Point(27, 617);
+            groupBox1.ForeColor = Color.LawnGreen;
+            groupBox1.Location = new Point(15, 634);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(570, 87);
             groupBox1.TabIndex = 10;
@@ -419,7 +460,9 @@
             // tbLink
             // 
             tbLink.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tbLink.BackColor = Color.Black;
             tbLink.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            tbLink.ForeColor = Color.LawnGreen;
             tbLink.Location = new Point(11, 48);
             tbLink.Name = "tbLink";
             tbLink.Size = new Size(517, 23);
@@ -450,7 +493,7 @@
             // 
             groupBox2.Anchor = AnchorStyles.Bottom;
             groupBox2.Controls.Add(pbProgressBar);
-            groupBox2.Controls.Add(button1);
+            groupBox2.Controls.Add(btnDoCompare);
             groupBox2.Controls.Add(btnStop);
             groupBox2.Controls.Add(cbZeroBytes);
             groupBox2.Controls.Add(cbRunEveryPackage);
@@ -465,7 +508,8 @@
             groupBox2.Controls.Add(label9);
             groupBox2.Controls.Add(tbGoldenLoc);
             groupBox2.Controls.Add(label10);
-            groupBox2.Location = new Point(27, 371);
+            groupBox2.ForeColor = Color.LawnGreen;
+            groupBox2.Location = new Point(15, 388);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(570, 227);
             groupBox2.TabIndex = 9;
@@ -480,24 +524,26 @@
             pbProgressBar.TabIndex = 30;
             pbProgressBar.Visible = false;
             // 
-            // button1
+            // btnDoCompare
             // 
-            button1.Location = new Point(416, 166);
-            button1.Name = "button1";
-            button1.Size = new Size(64, 23);
-            button1.TabIndex = 29;
-            button1.Text = "Compare";
-            button1.UseVisualStyleBackColor = true;
+            btnDoCompare.FlatStyle = FlatStyle.Flat;
+            btnDoCompare.Location = new Point(416, 166);
+            btnDoCompare.Name = "btnDoCompare";
+            btnDoCompare.Size = new Size(66, 23);
+            btnDoCompare.TabIndex = 29;
+            btnDoCompare.Text = "Compare";
+            btnDoCompare.UseVisualStyleBackColor = true;
             // 
             // btnStop
             // 
-            btnStop.Enabled = false;
+            btnStop.FlatStyle = FlatStyle.Flat;
             btnStop.Location = new Point(416, 21);
             btnStop.Name = "btnStop";
             btnStop.Size = new Size(64, 23);
             btnStop.TabIndex = 28;
             btnStop.Text = "Stop";
             btnStop.UseVisualStyleBackColor = true;
+            btnStop.Visible = false;
             btnStop.Click += btnStop_Click;
             // 
             // cbZeroBytes
@@ -571,17 +617,21 @@
             // 
             // btnCreateCompFiles
             // 
-            btnCreateCompFiles.Enabled = false;
+            btnCreateCompFiles.FlatStyle = FlatStyle.Flat;
             btnCreateCompFiles.Location = new Point(416, 91);
             btnCreateCompFiles.Name = "btnCreateCompFiles";
             btnCreateCompFiles.Size = new Size(64, 23);
             btnCreateCompFiles.TabIndex = 15;
             btnCreateCompFiles.Text = "Get";
             btnCreateCompFiles.UseVisualStyleBackColor = true;
+            btnCreateCompFiles.Visible = false;
             btnCreateCompFiles.Click += btnCreateCompFiles_Click;
             // 
             // tbCompLoc
             // 
+            tbCompLoc.BackColor = Color.Black;
+            tbCompLoc.BorderStyle = BorderStyle.FixedSingle;
+            tbCompLoc.ForeColor = Color.LawnGreen;
             tbCompLoc.Location = new Point(127, 92);
             tbCompLoc.Name = "tbCompLoc";
             tbCompLoc.Size = new Size(260, 23);
@@ -590,13 +640,14 @@
             // 
             // btnCreateGolden
             // 
-            btnCreateGolden.Enabled = false;
+            btnCreateGolden.FlatStyle = FlatStyle.Flat;
             btnCreateGolden.Location = new Point(416, 57);
             btnCreateGolden.Name = "btnCreateGolden";
             btnCreateGolden.Size = new Size(64, 23);
             btnCreateGolden.TabIndex = 14;
             btnCreateGolden.Text = "Get";
             btnCreateGolden.UseVisualStyleBackColor = true;
+            btnCreateGolden.Visible = false;
             btnCreateGolden.Click += button_CreateGolden;
             // 
             // label9
@@ -610,6 +661,9 @@
             // 
             // tbGoldenLoc
             // 
+            tbGoldenLoc.BackColor = Color.Black;
+            tbGoldenLoc.BorderStyle = BorderStyle.FixedSingle;
+            tbGoldenLoc.ForeColor = Color.LawnGreen;
             tbGoldenLoc.Location = new Point(127, 57);
             tbGoldenLoc.Name = "tbGoldenLoc";
             tbGoldenLoc.Size = new Size(260, 23);
@@ -625,6 +679,103 @@
             label10.TabIndex = 18;
             label10.Text = "Compare Location";
             // 
+            // tabSelectReportOptions
+            // 
+            tabSelectReportOptions.Appearance = TabAppearance.FlatButtons;
+            tabSelectReportOptions.Controls.Add(ReportSelectionTab);
+            tabSelectReportOptions.Controls.Add(tabSelectProjects);
+            tabSelectReportOptions.Location = new Point(598, 0);
+            tabSelectReportOptions.Name = "tabSelectReportOptions";
+            tabSelectReportOptions.SelectedIndex = 0;
+            tabSelectReportOptions.Size = new Size(417, 723);
+            tabSelectReportOptions.TabIndex = 13;
+            // 
+            // ReportSelectionTab
+            // 
+            ReportSelectionTab.BackColor = Color.Black;
+            ReportSelectionTab.Controls.Add(cbHideUnused);
+            ReportSelectionTab.Controls.Add(btnToggleAllOn);
+            ReportSelectionTab.Controls.Add(btnToggleAllOff);
+            ReportSelectionTab.Controls.Add(btnToggleReportSelection);
+            ReportSelectionTab.Controls.Add(label12);
+            ReportSelectionTab.Controls.Add(cbListReports);
+            ReportSelectionTab.Location = new Point(4, 27);
+            ReportSelectionTab.Name = "ReportSelectionTab";
+            ReportSelectionTab.Padding = new Padding(3);
+            ReportSelectionTab.Size = new Size(409, 692);
+            ReportSelectionTab.TabIndex = 0;
+            ReportSelectionTab.Text = "Select Reports";
+            // 
+            // btnToggleAllOn
+            // 
+            btnToggleAllOn.FlatStyle = FlatStyle.Flat;
+            btnToggleAllOn.ForeColor = Color.LawnGreen;
+            btnToggleAllOn.Location = new Point(116, 9);
+            btnToggleAllOn.Name = "btnToggleAllOn";
+            btnToggleAllOn.Size = new Size(34, 28);
+            btnToggleAllOn.TabIndex = 33;
+            btnToggleAllOn.Text = "All";
+            btnToggleAllOn.UseVisualStyleBackColor = true;
+            btnToggleAllOn.Click += btnToggleAllOn_Click;
+            // 
+            // btnToggleAllOff
+            // 
+            btnToggleAllOff.FlatStyle = FlatStyle.Flat;
+            btnToggleAllOff.ForeColor = Color.LawnGreen;
+            btnToggleAllOff.Location = new Point(156, 9);
+            btnToggleAllOff.Name = "btnToggleAllOff";
+            btnToggleAllOff.Size = new Size(51, 28);
+            btnToggleAllOff.TabIndex = 32;
+            btnToggleAllOff.Text = "None";
+            btnToggleAllOff.UseVisualStyleBackColor = true;
+            btnToggleAllOff.Click += btnToggleAllOff_Click;
+            // 
+            // btnToggleReportSelection
+            // 
+            btnToggleReportSelection.FlatStyle = FlatStyle.Flat;
+            btnToggleReportSelection.ForeColor = Color.LawnGreen;
+            btnToggleReportSelection.Location = new Point(213, 9);
+            btnToggleReportSelection.Name = "btnToggleReportSelection";
+            btnToggleReportSelection.Size = new Size(54, 28);
+            btnToggleReportSelection.TabIndex = 31;
+            btnToggleReportSelection.Text = "Toggle";
+            btnToggleReportSelection.UseVisualStyleBackColor = true;
+            btnToggleReportSelection.Click += btnToggleReportSelection_Click;
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.BackColor = Color.Black;
+            label12.ForeColor = Color.LawnGreen;
+            label12.Location = new Point(12, 16);
+            label12.Name = "label12";
+            label12.Size = new Size(83, 15);
+            label12.TabIndex = 1;
+            label12.Text = "Reports to Use";
+            // 
+            // cbListReports
+            // 
+            cbListReports.BackColor = Color.Black;
+            cbListReports.BorderStyle = BorderStyle.None;
+            cbListReports.ForeColor = Color.LawnGreen;
+            cbListReports.FormattingEnabled = true;
+            cbListReports.Location = new Point(3, 43);
+            cbListReports.Name = "cbListReports";
+            cbListReports.RightToLeft = RightToLeft.No;
+            cbListReports.Size = new Size(405, 648);
+            cbListReports.TabIndex = 0;
+            cbListReports.ItemCheck += cbListReports_ItemCheck;
+            // 
+            // tabSelectProjects
+            // 
+            tabSelectProjects.Location = new Point(4, 27);
+            tabSelectProjects.Name = "tabSelectProjects";
+            tabSelectProjects.Padding = new Padding(3);
+            tabSelectProjects.Size = new Size(409, 692);
+            tabSelectProjects.TabIndex = 1;
+            tabSelectProjects.Text = "Select Projects";
+            tabSelectProjects.UseVisualStyleBackColor = true;
+            // 
             // tabPage2
             // 
             tabPage2.Location = new Point(4, 24);
@@ -635,11 +786,32 @@
             tabPage2.Text = "Permissions";
             tabPage2.UseVisualStyleBackColor = true;
             // 
+            // label16
+            // 
+            label16.AutoSize = true;
+            label16.Location = new Point(791, 0);
+            label16.Name = "label16";
+            label16.Size = new Size(0, 15);
+            label16.TabIndex = 12;
+            // 
+            // cbHideUnused
+            // 
+            cbHideUnused.AutoSize = true;
+            cbHideUnused.ForeColor = Color.LawnGreen;
+            cbHideUnused.Location = new Point(292, 15);
+            cbHideUnused.Name = "cbHideUnused";
+            cbHideUnused.Size = new Size(94, 19);
+            cbHideUnused.TabIndex = 34;
+            cbHideUnused.Text = "Hide Unused";
+            cbHideUnused.UseVisualStyleBackColor = true;
+            cbHideUnused.CheckedChanged += cbHideUnused_CheckedChanged;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1013, 746);
+            Controls.Add(label16);
             Controls.Add(tabControl1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "Form1";
@@ -654,7 +826,11 @@
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            tabSelectReportOptions.ResumeLayout(false);
+            ReportSelectionTab.ResumeLayout(false);
+            ReportSelectionTab.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -676,7 +852,7 @@
         private Label label4;
         private ComboBox cbModels;
         private ComboBox cbReports;
-        private Button btnFetch;
+        private Button btnRunOneReport;
         private Label label5;
         private ComboBox cbPackage;
         private Label label3;
@@ -694,7 +870,7 @@
         private Label label7;
         private Label label8;
         private GroupBox groupBox2;
-        private Button button1;
+        private Button btnDoCompare;
         private Button btnStop;
         private CheckBox cbZeroBytes;
         private CheckBox cbRunEveryPackage;
@@ -711,5 +887,15 @@
         private Label label10;
         private TabPage tabPage2;
         private ProgressBar pbProgressBar;
+        private TabControl tabSelectReportOptions;
+        private TabPage ReportSelectionTab;
+        private TabPage tabSelectProjects;
+        private Label label12;
+        private CheckedListBox cbListReports;
+        private Button btnToggleAllOn;
+        private Button btnToggleAllOff;
+        private Button btnToggleReportSelection;
+        private Label label16;
+        private CheckBox cbHideUnused;
     }
 }

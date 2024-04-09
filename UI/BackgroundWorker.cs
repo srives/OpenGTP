@@ -42,11 +42,11 @@ namespace OpenGTP
             }
             if (btnStop.InvokeRequired)
             {
-                btnStop.Invoke(new Action(() => pbProgressBar.Enabled = false));
+                btnStop.Invoke(new Action(() => pbProgressBar.Visible = false));
             }
             else
             {
-                btnStop.Enabled = false;
+                btnStop.Visible = false;
             }
 
         }

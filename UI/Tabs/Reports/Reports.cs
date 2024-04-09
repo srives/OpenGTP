@@ -2,14 +2,12 @@
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 using System.Text.Json;
-using System.IO.Packaging;
-using System.Reflection;
-using System.Security.Policy;
 
 namespace OpenGTP
 {
     public partial class Form1 : Form
     {
+        private List<string> _reportListCache = [];
         private List<NamedId> _reports = [];
         private List<NamedId> _projects = [];
         private List<NamedId> _models = [];
@@ -172,7 +170,7 @@ namespace OpenGTP
         /// <summary>
         /// Get a list of reports from STRATUS and put list in dropdown list
         /// </summary>
-        private bool GetListOfReports(bool showError)
+        private bool GetReportsList(bool showError)
         {
             var success = true;
             var key = apiKey.Text;
@@ -181,8 +179,10 @@ namespace OpenGTP
             var url = $"{URLRoot}/v1/company/reports";
             var reports = client.GetAsync(url).Result;
 
+            cbListReports.Items.Clear();
             cbReports.Items.Clear();
             cbReports.Items.Add(string.Empty);
+            _reportListCache.Clear();
 
             try
             {
@@ -194,6 +194,8 @@ namespace OpenGTP
                     var rep = _reports[i];
                     var name = rep.name;
                     cbReports.Items.Add(name);
+                    cbListReports.Items.Add(name);
+                    _reportListCache.Add(name);
                 }
             }
             catch (Exception e)
@@ -206,10 +208,11 @@ namespace OpenGTP
             }
 
             if (_reports == null)
-            {
+            {                
                 _reports = new List<NamedId>();
             }
 
+            MatchScreenChecksToSavedChecks();
             lblNumReports.Text = $"{_reports.Count}";
             return success;
         }
@@ -233,19 +236,22 @@ namespace OpenGTP
                 var json = client.GetAsync(uri).Result;
                 var res = json.Content.ReadAsStringAsync().Result;
                 var data = JsonSerializer.Deserialize<JsonObject>(res);
-                if (data != null)
+                if (data != null && data?["data"] is JsonArray)
                 {
                     var projects = data["data"] as JsonArray;
                     if (projects != null)
                     {
-                        var len = projects.Count();
+                        var len = projects.Count;
                         for (int i = 0; i < len; i++)
                         {
                             var item = projects[i];
-                            string name = (string)item["name"];
-                            string id = (string)item["id"];
-                            _projects.Add(new NamedId() { name = name, id = id });
-                            cbProjects.Items.Add(name);
+                            var name = (string?)item?["name"];
+                            var id = (string?)item?["id"];
+                            if (name != null && id != null)
+                            {
+                                _projects.Add(new NamedId() { name = name, id = id });
+                                cbProjects.Items.Add(name);
+                            }
                         }
                     }
                 }
@@ -308,6 +314,23 @@ namespace OpenGTP
             return (csv, totalMS);
         }
 
+        private List<string> GetCheckedReports()
+        {
+            List<string> ret;
+            if (cbListReports.InvokeRequired)
+            {
+                return (List<string>)this.Invoke(new System.Windows.Forms.MethodInvoker(() =>
+                {
+                    ret = cbListReports.CheckedItems.Cast<string>().ToList();
+                }));
+            }
+            else
+            {
+                ret = cbListReports.CheckedItems.Cast<string>().ToList();
+            }
+            return ret;
+        }
+
         private void RunAllReports(string saveToPath, bool writeZeroByteFiles, BackgroundWorker worker, DoWorkEventArgs e)
         {
             var errors = 0;
@@ -338,19 +361,24 @@ namespace OpenGTP
                 return;
             }
 
-            Stopwatch timer = new Stopwatch();
+            Stopwatch timer = new ();
             timer.Start();
             SetLabel(lblStartTime, $"Started {DateTime.Now.ToString("HH:mm")}");
             SetLabel(lblTotalTime, "Running...");
+            var checkedReports = GetCheckedReports();
 
             // Loop through all reports, all projects, all models, all packages
             // and create a golden file for each one
             foreach (var report in _reports)
-            {
+            {                
                 if (worker.CancellationPending)
                 {
                     e.Cancel = true;
                     break;
+                }
+                if (string.IsNullOrEmpty(report.name) || !checkedReports.Contains(report.name))
+                {
+                    continue;
                 }
                 _progress++;
                 projects = 0;

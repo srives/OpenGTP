@@ -16,23 +16,23 @@ namespace OpenGTP
                 return;
             }
             Settings.Default["AppKey"] = apiKey.Text;
-            Properties.Settings.Default.Save();
+            Settings.Default.Save();
             var curr = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
             cbReports.Items.Clear();
-            if (GetProjects(true) && GetListOfReports(true))
+            if (GetProjects(true) && GetReportsList(true))
             {
                 success = true;
             }
-            btnFetch.Enabled = success;
-            btnCreateCompFiles.Enabled = success;
-            btnCreateGolden.Enabled = success;
+            btnRunOneReport.Visible = success;
+            btnCreateCompFiles.Visible = success;
+            btnCreateGolden.Visible = success;
             Cursor.Current = curr;
         }
 
         private void OnProjectChange(object sender, EventArgs e)
         {
-            var selected = (string)cbProjects.SelectedItem;
+            var selected = (string?)cbProjects?.SelectedItem;
             var project = _projects.Where(x => x.name == selected).FirstOrDefault();
             SetReportURL();
             if (project != null)
@@ -47,7 +47,7 @@ namespace OpenGTP
 
         private void OnModelChanged(object sender, EventArgs e)
         {
-            var selected = (string)cbModels.SelectedItem;
+            var selected = (string?)cbModels.SelectedItem;
             var model = _models.Where(x => x.name == selected).FirstOrDefault();
             SetReportURL();
             if (model != null)
@@ -68,7 +68,7 @@ namespace OpenGTP
         private void OnEnvChanged(object sender, EventArgs e)
         {
             var success = false;
-            if (cbEnv.Text != (string)Settings.Default["Env"])
+            if (cbEnv.Text != (string?)Settings.Default["Env"])
             {
                 Settings.Default["Env"] = cbEnv.Text;
                 Properties.Settings.Default.Save();
@@ -77,13 +77,13 @@ namespace OpenGTP
                 lblNumPackages.Text = "0";
                 lblNumPorjects.Text = "0";
                 cbReports.Items.Clear();
-                if (GetProjects(false) && GetListOfReports(false))
+                if (GetProjects(false) && GetReportsList(false))
                 {
                     success = true;
                 }
-                btnCreateGolden.Enabled = success;
-                btnCreateCompFiles.Enabled = success;
-                btnFetch.Enabled = success;
+                btnCreateGolden.Visible = success;
+                btnCreateCompFiles.Visible = success;
+                btnRunOneReport.Visible = success;
             }
         }
 
@@ -118,9 +118,17 @@ namespace OpenGTP
             if (result == DialogResult.OK)
             {
                 tbGoldenLoc.Text = dialog.SelectedPath;
-                Settings.Default["GoldenLoc"] = tbGoldenLoc.Text;
-                Properties.Settings.Default.Save();
+                SaveReportPaths();
             }
+        }
+
+        private void SaveReportPaths()
+        {
+            var goldPath = GetTextBoxText(tbGoldenLoc);
+            Settings.Default["GoldenLoc"] = goldPath;
+            var compPath = GetTextBoxText(tbCompLoc);
+            Settings.Default["CompLoc"] = compPath;
+            Settings.Default.Save();
         }
 
         private void btnCompDir_Click(object sender, EventArgs e)
@@ -139,8 +147,7 @@ namespace OpenGTP
             if (result == DialogResult.OK)
             {
                 tbCompLoc.Text = dialog.SelectedPath;
-                Settings.Default["CompLoc"] = tbCompLoc.Text;
-                Properties.Settings.Default.Save();
+                SaveReportPaths();
             }
         }
 
@@ -148,7 +155,8 @@ namespace OpenGTP
         {
             if (!backgroundWorker.IsBusy)
             {
-                btnStop.Enabled = true;
+                SaveReportPaths();
+                btnStop.Visible = true;
                 pbProgressBar.Visible = true;
                 backgroundWorker.RunWorkerAsync(tbCompLoc.Text);
             }
@@ -158,7 +166,8 @@ namespace OpenGTP
         {
             if (!backgroundWorker.IsBusy)
             {
-                btnStop.Enabled = true;
+                SaveReportPaths();
+                btnStop.Visible = true;
                 pbProgressBar.Visible = true;
                 backgroundWorker.RunWorkerAsync(tbGoldenLoc.Text); // calls BackgroundWorker_DoWork()
             }

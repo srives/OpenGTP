@@ -17,5 +17,11 @@
     <Setting Name="Env" Type="System.String" Scope="User">
       <Value Profile="(Default)">Production</Value>
     </Setting>
+    <Setting Name="SelectedReports" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SelectedProjects" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
