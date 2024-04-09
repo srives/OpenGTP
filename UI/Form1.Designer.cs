@@ -46,7 +46,7 @@
             label1 = new Label();
             label4 = new Label();
             cbModels = new ComboBox();
-            cbReports = new ComboBox();
+            cbReportsRunOneDropDown = new ComboBox();
             btnRunOneReport = new Button();
             label5 = new Label();
             cbPackage = new ComboBox();
@@ -83,16 +83,11 @@
             label10 = new Label();
             tabSelectReportOptions = new TabControl();
             ReportSelectionTab = new TabPage();
-            cbHideUnused = new CheckBox();
-            btnToggleAllOn = new Button();
-            btnToggleAllOff = new Button();
-            btnToggleReportSelection = new Button();
-            label12 = new Label();
-            cbListReports = new CheckedListBox();
             tabSelectProjects = new TabPage();
             cbtProjects = new CheckBoxListToggle();
             tabPage2 = new TabPage();
             label16 = new Label();
+            cbtReports = new CheckBoxListToggle();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -154,7 +149,7 @@
             groupBox3.Controls.Add(label1);
             groupBox3.Controls.Add(label4);
             groupBox3.Controls.Add(cbModels);
-            groupBox3.Controls.Add(cbReports);
+            groupBox3.Controls.Add(cbReportsRunOneDropDown);
             groupBox3.Controls.Add(btnRunOneReport);
             groupBox3.Controls.Add(label5);
             groupBox3.Controls.Add(cbPackage);
@@ -281,17 +276,17 @@
             cbModels.TabIndex = 4;
             cbModels.SelectedIndexChanged += OnModelChanged;
             // 
-            // cbReports
+            // cbReportsRunOneDropDown
             // 
-            cbReports.BackColor = Color.Black;
-            cbReports.FlatStyle = FlatStyle.Flat;
-            cbReports.ForeColor = Color.LawnGreen;
-            cbReports.FormattingEnabled = true;
-            cbReports.Location = new Point(127, 30);
-            cbReports.Name = "cbReports";
-            cbReports.Size = new Size(283, 23);
-            cbReports.TabIndex = 2;
-            cbReports.SelectedIndexChanged += OnReportChanged;
+            cbReportsRunOneDropDown.BackColor = Color.Black;
+            cbReportsRunOneDropDown.FlatStyle = FlatStyle.Flat;
+            cbReportsRunOneDropDown.ForeColor = Color.LawnGreen;
+            cbReportsRunOneDropDown.FormattingEnabled = true;
+            cbReportsRunOneDropDown.Location = new Point(127, 30);
+            cbReportsRunOneDropDown.Name = "cbReportsRunOneDropDown";
+            cbReportsRunOneDropDown.Size = new Size(283, 23);
+            cbReportsRunOneDropDown.TabIndex = 2;
+            cbReportsRunOneDropDown.SelectedIndexChanged += OnReportChanged;
             // 
             // btnRunOneReport
             // 
@@ -695,90 +690,13 @@
             // ReportSelectionTab
             // 
             ReportSelectionTab.BackColor = Color.Black;
-            ReportSelectionTab.Controls.Add(cbHideUnused);
-            ReportSelectionTab.Controls.Add(btnToggleAllOn);
-            ReportSelectionTab.Controls.Add(btnToggleAllOff);
-            ReportSelectionTab.Controls.Add(btnToggleReportSelection);
-            ReportSelectionTab.Controls.Add(label12);
-            ReportSelectionTab.Controls.Add(cbListReports);
+            ReportSelectionTab.Controls.Add(cbtReports);
             ReportSelectionTab.Location = new Point(4, 27);
             ReportSelectionTab.Name = "ReportSelectionTab";
             ReportSelectionTab.Padding = new Padding(3);
             ReportSelectionTab.Size = new Size(409, 692);
             ReportSelectionTab.TabIndex = 0;
             ReportSelectionTab.Text = "Select Reports";
-            // 
-            // cbHideUnused
-            // 
-            cbHideUnused.AutoSize = true;
-            cbHideUnused.ForeColor = Color.LawnGreen;
-            cbHideUnused.Location = new Point(292, 15);
-            cbHideUnused.Name = "cbHideUnused";
-            cbHideUnused.Size = new Size(94, 19);
-            cbHideUnused.TabIndex = 34;
-            cbHideUnused.Text = "Hide Unused";
-            cbHideUnused.UseVisualStyleBackColor = true;
-            cbHideUnused.CheckedChanged += cbHideUnused_CheckedChanged;
-            // 
-            // btnToggleAllOn
-            // 
-            btnToggleAllOn.FlatStyle = FlatStyle.Flat;
-            btnToggleAllOn.ForeColor = Color.LawnGreen;
-            btnToggleAllOn.Location = new Point(116, 9);
-            btnToggleAllOn.Name = "btnToggleAllOn";
-            btnToggleAllOn.Size = new Size(34, 28);
-            btnToggleAllOn.TabIndex = 33;
-            btnToggleAllOn.Text = "All";
-            btnToggleAllOn.UseVisualStyleBackColor = true;
-            btnToggleAllOn.Click += btnToggleAllOn_Click;
-            // 
-            // btnToggleAllOff
-            // 
-            btnToggleAllOff.FlatStyle = FlatStyle.Flat;
-            btnToggleAllOff.ForeColor = Color.LawnGreen;
-            btnToggleAllOff.Location = new Point(156, 9);
-            btnToggleAllOff.Name = "btnToggleAllOff";
-            btnToggleAllOff.Size = new Size(51, 28);
-            btnToggleAllOff.TabIndex = 32;
-            btnToggleAllOff.Text = "None";
-            btnToggleAllOff.UseVisualStyleBackColor = true;
-            btnToggleAllOff.Click += btnToggleAllOff_Click;
-            // 
-            // btnToggleReportSelection
-            // 
-            btnToggleReportSelection.FlatStyle = FlatStyle.Flat;
-            btnToggleReportSelection.ForeColor = Color.LawnGreen;
-            btnToggleReportSelection.Location = new Point(213, 9);
-            btnToggleReportSelection.Name = "btnToggleReportSelection";
-            btnToggleReportSelection.Size = new Size(54, 28);
-            btnToggleReportSelection.TabIndex = 31;
-            btnToggleReportSelection.Text = "Toggle";
-            btnToggleReportSelection.UseVisualStyleBackColor = true;
-            btnToggleReportSelection.Click += btnToggleReportSelection_Click;
-            // 
-            // label12
-            // 
-            label12.AutoSize = true;
-            label12.BackColor = Color.Black;
-            label12.ForeColor = Color.LawnGreen;
-            label12.Location = new Point(12, 16);
-            label12.Name = "label12";
-            label12.Size = new Size(83, 15);
-            label12.TabIndex = 1;
-            label12.Text = "Reports to Use";
-            // 
-            // cbListReports
-            // 
-            cbListReports.BackColor = Color.Black;
-            cbListReports.BorderStyle = BorderStyle.None;
-            cbListReports.ForeColor = Color.LawnGreen;
-            cbListReports.FormattingEnabled = true;
-            cbListReports.Location = new Point(3, 43);
-            cbListReports.Name = "cbListReports";
-            cbListReports.RightToLeft = RightToLeft.No;
-            cbListReports.Size = new Size(405, 648);
-            cbListReports.TabIndex = 0;
-            cbListReports.ItemCheck += cbListReports_ItemCheck;
             // 
             // tabSelectProjects
             // 
@@ -794,7 +712,7 @@
             // cbtProjects
             // 
             cbtProjects.BackColor = Color.Black;
-            cbtProjects.Location = new Point(2, 0);
+            cbtProjects.Location = new Point(1, 0);
             cbtProjects.Name = "cbtProjects";
             cbtProjects.Size = new Size(409, 702);
             cbtProjects.TabIndex = 0;
@@ -816,6 +734,14 @@
             label16.Name = "label16";
             label16.Size = new Size(0, 15);
             label16.TabIndex = 12;
+            // 
+            // cbtReports
+            // 
+            cbtReports.BackColor = Color.Black;
+            cbtReports.Location = new Point(1, 0);
+            cbtReports.Name = "cbtReports";
+            cbtReports.Size = new Size(409, 702);
+            cbtReports.TabIndex = 0;
             // 
             // Form1
             // 
@@ -839,7 +765,6 @@
             groupBox2.PerformLayout();
             tabSelectReportOptions.ResumeLayout(false);
             ReportSelectionTab.ResumeLayout(false);
-            ReportSelectionTab.PerformLayout();
             tabSelectProjects.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -863,7 +788,7 @@
         private Label label1;
         private Label label4;
         private ComboBox cbModels;
-        private ComboBox cbReports;
+        private ComboBox cbReportsRunOneDropDown;
         private Button btnRunOneReport;
         private Label label5;
         private ComboBox cbPackage;
@@ -902,13 +827,8 @@
         private TabControl tabSelectReportOptions;
         private TabPage ReportSelectionTab;
         private TabPage tabSelectProjects;
-        private Label label12;
-        private CheckedListBox cbListReports;
-        private Button btnToggleAllOn;
-        private Button btnToggleAllOff;
-        private Button btnToggleReportSelection;
         private Label label16;
-        private CheckBox cbHideUnused;
         private CheckBoxListToggle cbtProjects;
+        private CheckBoxListToggle cbtReports;
     }
 }

@@ -8,7 +8,6 @@ namespace OpenGTP
 {
     public partial class Form1 : Form
     {
-        private List<string> _reportListCache = [];
         private List<NamedId> _reports = [];
         private List<NamedId> _projects = [];
         private List<NamedId> _models = [];
@@ -52,9 +51,9 @@ namespace OpenGTP
                     packageId = package.id;
                 }
             }
-            if (cbReports.SelectedItem != null)
+            if (cbReportsRunOneDropDown.SelectedItem != null)
             {
-                var reportName = (string)cbReports.SelectedItem;
+                var reportName = (string)cbReportsRunOneDropDown.SelectedItem;
                 var report = _reports.Where(x => x.name == reportName).FirstOrDefault();
                 if (report != null)
                 {
@@ -180,10 +179,9 @@ namespace OpenGTP
             var url = $"{URLRoot}/v1/company/reports";
             var reports = client.GetAsync(url).Result;
 
-            cbListReports.Items.Clear();
-            cbReports.Items.Clear();
-            cbReports.Items.Add(string.Empty);
-            _reportListCache.Clear();
+            cbtReports.Clear();
+            cbReportsRunOneDropDown.Items.Clear();
+            cbReportsRunOneDropDown.Items.Add(string.Empty);
 
             try
             {
@@ -194,9 +192,7 @@ namespace OpenGTP
                 {
                     var rep = _reports[i];
                     var name = rep.name;
-                    cbReports.Items.Add(name);
-                    cbListReports.Items.Add(name);
-                    _reportListCache.Add(name);
+                    cbReportsRunOneDropDown.Items.Add(name);                    
                 }
             }
             catch (Exception e)
@@ -213,7 +209,7 @@ namespace OpenGTP
                 _reports = new List<NamedId>();
             }
 
-            MatchScreenChecksToSavedChecks();
+            cbtReports.Init(_reports, "Reports to use", "SelectedReports");
             lblNumReports.Text = $"{_reports.Count}";
             return success;
         }
@@ -316,23 +312,6 @@ namespace OpenGTP
             return (csv, totalMS);
         }
 
-        private List<string> GetCheckedReports()
-        {
-            List<string> ret = [];
-            if (cbListReports.InvokeRequired)
-            {
-                this.Invoke(new MethodInvoker(() =>
-                {
-                    ret = cbListReports.CheckedItems.Cast<string>().ToList();
-                }));
-            }
-            else
-            {
-                ret = cbListReports.CheckedItems.Cast<string>().ToList();
-            }
-            return ret;
-        }
-
         private void RunAllReports(string saveToPath, bool writeZeroByteFiles, BackgroundWorker worker, DoWorkEventArgs e)
         {
             var errors = 0;
@@ -367,7 +346,8 @@ namespace OpenGTP
             timer.Start();
             Safe.SetLabel(this, lblStartTime, $"Started {DateTime.Now.ToString("HH:mm")}");
             Safe.SetLabel(this, lblTotalTime, "Running...");
-            var checkedReports = GetCheckedReports();
+            var checkedReports = cbtReports.GetCheckedItems();
+            var checkedProjects = cbtProjects.GetCheckedItems();
 
             // Loop through all reports, all projects, all models, all packages
             // and create a golden file for each one
@@ -386,7 +366,7 @@ namespace OpenGTP
                 projects = 0;
                 models = 0;
                 packages = 0;
-                Safe.SetLabel(this, lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
+                Safe.SetLabel(this, lblProgress, $"Report {_progress} of {checkedReports.Count}, Project {projects} of {checkedProjects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
                 foreach (var project in _projects)
                 {
                     if (worker.CancellationPending)
@@ -394,10 +374,14 @@ namespace OpenGTP
                         e.Cancel = true;
                         break;
                     }
+                    if (string.IsNullOrEmpty(project.name) || !checkedProjects.Contains(project.name))
+                    {
+                        continue;
+                    }
                     projects++;
                     models = 0;
                     packages = 0;
-                    Safe.SetLabel(this, lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
+                    Safe.SetLabel(this, lblProgress, $"Report {_progress} of {checkedReports.Count}, Project {projects} of {checkedProjects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
                     if (!GetModels(project.id, false))
                     {
                         errors++;
@@ -411,7 +395,7 @@ namespace OpenGTP
                             break;
                         }
                         models++;
-                        Safe.SetLabel(this, lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
+                        Safe.SetLabel(this, lblProgress, $"Report {_progress} of {checkedReports.Count}, Project {projects} of {checkedProjects.Count}, Model {models} of {_models.Count}, Packages {_packages.Count}. *({errors})");
                         var url = $"{URLRoot}/v1/package/dashboard?projectId={project.id}&modelId={model.id}&reportId={report.id}";
                         Write(url, writeZeroByteFiles, saveToPath, report.name, project.name, model.name, string.Empty);
 
@@ -427,7 +411,7 @@ namespace OpenGTP
                                     break;
                                 }
                                 packages++;
-                                Safe.SetLabel(this, lblProgress, $"Report {_progress} of {_reports.Count}, Project {projects} of {_projects.Count}, Model {models} of {_models.Count}, Package {packages} of {_packages.Count}. *({errors})");
+                                Safe.SetLabel(this, lblProgress, $"Report {_progress} of {checkedReports.Count}, Project {projects} of {checkedProjects.Count}, Model {models} of {_models.Count}, Package {packages} of {_packages.Count}. *({errors})");
                                 url = $"{URLRoot}/v1/package/dashboard?projectId={project.id}&packageId={package.id}&modelId={model.id}&reportId={report.id}";
                                 Write(url, writeZeroByteFiles, saveToPath, report.name, project.name, model.name, package.name);
                             }

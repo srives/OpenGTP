@@ -31,6 +31,31 @@ namespace OpenGTP
             MatchScreenChecksToSavedChecks();
         }
 
+        public void Clear()
+        {
+            cbList.Items.Clear(); // clear what is on the screen
+            _theList.Clear(); // clear the master list -- used to build all other
+            _listCache.Clear(); // backup copy of master list -- used for hiding/unhiding checked/unchecked
+        }
+
+        public List<string> GetCheckedItems()
+        {
+            List<string> ret = [];
+            if (cbList.InvokeRequired)
+            {
+                this.Invoke(new MethodInvoker(() =>
+                {
+                    ret = cbList.CheckedItems.Cast<string>().ToList();
+                }));
+            }
+            else
+            {
+                ret = cbList.CheckedItems.Cast<string>().ToList();
+            }
+            return ret;
+        }
+
+
         private void btnToggleSelection_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < cbList.Items.Count; i++)

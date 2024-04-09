@@ -20,7 +20,7 @@ namespace OpenGTP
             Settings.Default.Save();
             var curr = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
-            cbReports.Items.Clear();
+            cbReportsRunOneDropDown.Items.Clear();
             if (GetProjects(true) && GetReportsList(true))
             {
                 success = true;
@@ -77,7 +77,7 @@ namespace OpenGTP
                 lblNumModels.Text = "0";
                 lblNumPackages.Text = "0";
                 lblNumPorjects.Text = "0";
-                cbReports.Items.Clear();
+                cbReportsRunOneDropDown.Items.Clear();
                 if (GetProjects(false) && GetReportsList(false))
                 {
                     success = true;
