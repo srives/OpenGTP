@@ -223,6 +223,7 @@ namespace OpenGTP
             cbProjects.Items.Clear();
             cbProjects.Items.Add(string.Empty);
             cbProjects.SelectedIndex = 0;
+            cbtProjects.Clear();
             _projects = new List<NamedId>();
             var key = apiKey.Text;
             var client = new HttpClient();
