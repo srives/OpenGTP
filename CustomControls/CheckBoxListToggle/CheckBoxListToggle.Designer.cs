@@ -95,14 +95,14 @@
             btnToggleReportSelection.UseVisualStyleBackColor = true;
             btnToggleReportSelection.Click += btnToggleSelection_Click;
             // 
-            // cbListReports
+            // cbList
             // 
             cbList.BackColor = Color.Black;
             cbList.BorderStyle = BorderStyle.None;
             cbList.ForeColor = Color.LawnGreen;
             cbList.FormattingEnabled = true;
             cbList.Location = new Point(3, 38);
-            cbList.Name = "cbListReports";
+            cbList.Name = "cbList";
             cbList.RightToLeft = RightToLeft.No;
             cbList.Size = new Size(405, 648);
             cbList.TabIndex = 39;

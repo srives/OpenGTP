@@ -103,6 +103,11 @@ namespace OpenGTP
                     .Replace("\"", "-").Replace("'", "").Replace("`", "").Replace("~", "-").Replace("+", "")
                     .Replace("<", "").Replace(">", "").Replace("=", "").Replace("--", "-").Replace("--", "-").Replace("--", "-");
             return $"[{ret}]_";
-        }     
+        }
+
+        private void btnDoCompare_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

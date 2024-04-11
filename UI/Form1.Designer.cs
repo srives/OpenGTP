@@ -31,8 +31,14 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             openFileDialog1 = new OpenFileDialog();
             backgroundWorker = new System.ComponentModel.BackgroundWorker();
-            tabControl1 = new TabControl();
-            tabPage1 = new TabPage();
+            mainTabControl = new TabControl();
+            tabSettings = new TabPage();
+            pictureBox2 = new PictureBox();
+            tabReports = new TabPage();
+            label7 = new Label();
+            btnCopy = new Button();
+            pictureBox1 = new PictureBox();
+            tbLink = new TextBox();
             groupBox3 = new GroupBox();
             lblNumPackages = new Label();
             lblNumModels = new Label();
@@ -59,11 +65,6 @@
             label2 = new Label();
             label6 = new Label();
             apiKey = new TextBox();
-            groupBox1 = new GroupBox();
-            btnCopy = new Button();
-            tbLink = new TextBox();
-            label7 = new Label();
-            label8 = new Label();
             groupBox2 = new GroupBox();
             pbProgressBar = new ProgressBar();
             btnDoCompare = new Button();
@@ -83,16 +84,20 @@
             label10 = new Label();
             tabSelectReportOptions = new TabControl();
             ReportSelectionTab = new TabPage();
+            cbtReports = new CheckBoxListToggle();
             tabSelectProjects = new TabPage();
             cbtProjects = new CheckBoxListToggle();
-            tabPage2 = new TabPage();
+            tabSelectCompanies = new TabPage();
+            tabPermissions = new TabPage();
+            tabPublishing = new TabPage();
             label16 = new Label();
-            cbtReports = new CheckBoxListToggle();
-            tabControl1.SuspendLayout();
-            tabPage1.SuspendLayout();
+            mainTabControl.SuspendLayout();
+            tabSettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            tabReports.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             groupBox3.SuspendLayout();
             groupBox4.SuspendLayout();
-            groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             tabSelectReportOptions.SuspendLayout();
             ReportSelectionTab.SuspendLayout();
@@ -109,30 +114,102 @@
             backgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
             // 
-            // tabControl1
+            // mainTabControl
             // 
-            tabControl1.Controls.Add(tabPage1);
-            tabControl1.Controls.Add(tabPage2);
-            tabControl1.Location = new Point(-6, 1);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(1024, 751);
-            tabControl1.TabIndex = 11;
+            mainTabControl.Controls.Add(tabSettings);
+            mainTabControl.Controls.Add(tabReports);
+            mainTabControl.Controls.Add(tabPermissions);
+            mainTabControl.Controls.Add(tabPublishing);
+            mainTabControl.Location = new Point(-6, 1);
+            mainTabControl.Name = "mainTabControl";
+            mainTabControl.SelectedIndex = 0;
+            mainTabControl.Size = new Size(1024, 751);
+            mainTabControl.TabIndex = 11;
             // 
-            // tabPage1
+            // tabSettings
             // 
-            tabPage1.BackColor = Color.Black;
-            tabPage1.Controls.Add(groupBox3);
-            tabPage1.Controls.Add(groupBox4);
-            tabPage1.Controls.Add(groupBox1);
-            tabPage1.Controls.Add(groupBox2);
-            tabPage1.Controls.Add(tabSelectReportOptions);
-            tabPage1.Location = new Point(4, 24);
-            tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(1016, 723);
-            tabPage1.TabIndex = 0;
-            tabPage1.Text = "Reports";
+            tabSettings.BackColor = Color.Black;
+            tabSettings.BackgroundImageLayout = ImageLayout.Stretch;
+            tabSettings.Controls.Add(pictureBox2);
+            tabSettings.Location = new Point(4, 24);
+            tabSettings.Name = "tabSettings";
+            tabSettings.Padding = new Padding(3);
+            tabSettings.Size = new Size(1016, 723);
+            tabSettings.TabIndex = 3;
+            tabSettings.Text = "Settings";
+            // 
+            // pictureBox2
+            // 
+            pictureBox2.BackgroundImage = Properties.Resources.control;
+            pictureBox2.BackgroundImageLayout = ImageLayout.Stretch;
+            pictureBox2.Location = new Point(3, -45);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(1013, 822);
+            pictureBox2.TabIndex = 0;
+            pictureBox2.TabStop = false;
+            // 
+            // tabReports
+            // 
+            tabReports.BackColor = Color.Black;
+            tabReports.Controls.Add(pictureBox1);
+            tabReports.Controls.Add(label7);
+            tabReports.Controls.Add(btnCopy);
+            tabReports.Controls.Add(tbLink);
+            tabReports.Controls.Add(groupBox3);
+            tabReports.Controls.Add(groupBox4);
+            tabReports.Controls.Add(groupBox2);
+            tabReports.Controls.Add(tabSelectReportOptions);
+            tabReports.Location = new Point(4, 24);
+            tabReports.Name = "tabReports";
+            tabReports.Padding = new Padding(3);
+            tabReports.Size = new Size(1016, 723);
+            tabReports.TabIndex = 0;
+            tabReports.Text = "Reports";
+            tabReports.Click += btnDoCompare_Click;
+            // 
+            // label7
+            // 
+            label7.Anchor = AnchorStyles.Bottom;
+            label7.AutoSize = true;
+            label7.Font = new Font("Segoe UI", 8.25F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            label7.ForeColor = Color.LawnGreen;
+            label7.Location = new Point(15, 672);
+            label7.Name = "label7";
+            label7.Size = new Size(539, 13);
+            label7.TabIndex = 3;
+            label7.Text = "Add OpenAPI key to Power BI as \"app-key\" and paste this URL into Power BI under the \"Get data\" -> Web option:";
+            // 
+            // btnCopy
+            // 
+            btnCopy.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnCopy.BackgroundImage = (Image)resources.GetObject("btnCopy.BackgroundImage");
+            btnCopy.BackgroundImageLayout = ImageLayout.Stretch;
+            btnCopy.Font = new Font("Segoe UI", 11.25F);
+            btnCopy.Location = new Point(559, 687);
+            btnCopy.Name = "btnCopy";
+            btnCopy.Size = new Size(25, 25);
+            btnCopy.TabIndex = 4;
+            btnCopy.UseVisualStyleBackColor = true;
+            btnCopy.Click += btnCopy_Click;
+            // 
+            // pictureBox1
+            // 
+            pictureBox1.Location = new Point(590, 0);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(12, 727);
+            pictureBox1.TabIndex = 14;
+            pictureBox1.TabStop = false;
+            // 
+            // tbLink
+            // 
+            tbLink.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tbLink.BackColor = Color.Black;
+            tbLink.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            tbLink.ForeColor = Color.LawnGreen;
+            tbLink.Location = new Point(15, 688);
+            tbLink.Name = "tbLink";
+            tbLink.Size = new Size(545, 23);
+            tbLink.TabIndex = 2;
             // 
             // groupBox3
             // 
@@ -155,7 +232,7 @@
             groupBox3.Controls.Add(cbPackage);
             groupBox3.Controls.Add(label3);
             groupBox3.ForeColor = Color.LawnGreen;
-            groupBox3.Location = new Point(15, 160);
+            groupBox3.Location = new Point(15, 156);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(570, 212);
             groupBox3.TabIndex = 12;
@@ -291,7 +368,7 @@
             // btnRunOneReport
             // 
             btnRunOneReport.FlatStyle = FlatStyle.Flat;
-            btnRunOneReport.Location = new Point(416, 172);
+            btnRunOneReport.Location = new Point(492, 173);
             btnRunOneReport.Name = "btnRunOneReport";
             btnRunOneReport.Size = new Size(64, 23);
             btnRunOneReport.TabIndex = 12;
@@ -388,7 +465,7 @@
             // 
             btnOpenAPI.BackColor = Color.Black;
             btnOpenAPI.FlatStyle = FlatStyle.Flat;
-            btnOpenAPI.Location = new Point(416, 37);
+            btnOpenAPI.Location = new Point(492, 36);
             btnOpenAPI.Name = "btnOpenAPI";
             btnOpenAPI.Size = new Size(64, 23);
             btnOpenAPI.TabIndex = 1;
@@ -426,66 +503,6 @@
             apiKey.Size = new Size(283, 23);
             apiKey.TabIndex = 0;
             // 
-            // groupBox1
-            // 
-            groupBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            groupBox1.Controls.Add(btnCopy);
-            groupBox1.Controls.Add(tbLink);
-            groupBox1.Controls.Add(label7);
-            groupBox1.Controls.Add(label8);
-            groupBox1.FlatStyle = FlatStyle.Flat;
-            groupBox1.ForeColor = Color.LawnGreen;
-            groupBox1.Location = new Point(15, 634);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(570, 87);
-            groupBox1.TabIndex = 10;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Power BI";
-            // 
-            // btnCopy
-            // 
-            btnCopy.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCopy.BackgroundImage = (Image)resources.GetObject("btnCopy.BackgroundImage");
-            btnCopy.BackgroundImageLayout = ImageLayout.Stretch;
-            btnCopy.Font = new Font("Segoe UI", 11.25F);
-            btnCopy.Location = new Point(528, 45);
-            btnCopy.Name = "btnCopy";
-            btnCopy.Size = new Size(30, 28);
-            btnCopy.TabIndex = 4;
-            btnCopy.UseVisualStyleBackColor = true;
-            // 
-            // tbLink
-            // 
-            tbLink.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tbLink.BackColor = Color.Black;
-            tbLink.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tbLink.ForeColor = Color.LawnGreen;
-            tbLink.Location = new Point(11, 48);
-            tbLink.Name = "tbLink";
-            tbLink.Size = new Size(517, 23);
-            tbLink.TabIndex = 2;
-            // 
-            // label7
-            // 
-            label7.Anchor = AnchorStyles.Bottom;
-            label7.AutoSize = true;
-            label7.Location = new Point(9, 30);
-            label7.Name = "label7";
-            label7.Size = new Size(349, 15);
-            label7.TabIndex = 3;
-            label7.Text = "Paste this URL into Power BI under the \"Get data\" -> Web option:";
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.FlatStyle = FlatStyle.Flat;
-            label8.Font = new Font("Consolas", 8.25F, FontStyle.Italic, GraphicsUnit.Point, 0);
-            label8.Location = new Point(315, 13);
-            label8.Name = "label8";
-            label8.Size = new Size(247, 13);
-            label8.TabIndex = 4;
-            label8.Text = "Add OpenAPI key to Power BI as \"app-key\"";
-            // 
             // groupBox2
             // 
             groupBox2.Anchor = AnchorStyles.Bottom;
@@ -506,7 +523,7 @@
             groupBox2.Controls.Add(tbGoldenLoc);
             groupBox2.Controls.Add(label10);
             groupBox2.ForeColor = Color.LawnGreen;
-            groupBox2.Location = new Point(15, 388);
+            groupBox2.Location = new Point(15, 387);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(570, 227);
             groupBox2.TabIndex = 9;
@@ -524,17 +541,18 @@
             // btnDoCompare
             // 
             btnDoCompare.FlatStyle = FlatStyle.Flat;
-            btnDoCompare.Location = new Point(416, 166);
+            btnDoCompare.Location = new Point(492, 170);
             btnDoCompare.Name = "btnDoCompare";
             btnDoCompare.Size = new Size(66, 23);
             btnDoCompare.TabIndex = 29;
             btnDoCompare.Text = "Compare";
             btnDoCompare.UseVisualStyleBackColor = true;
+            btnDoCompare.Click += btnDoCompare_Click;
             // 
             // btnStop
             // 
             btnStop.FlatStyle = FlatStyle.Flat;
-            btnStop.Location = new Point(416, 21);
+            btnStop.Location = new Point(492, 21);
             btnStop.Name = "btnStop";
             btnStop.Size = new Size(64, 23);
             btnStop.TabIndex = 28;
@@ -595,7 +613,7 @@
             // btnCompDir
             // 
             btnCompDir.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnCompDir.Location = new Point(382, 91);
+            btnCompDir.Location = new Point(463, 91);
             btnCompDir.Name = "btnCompDir";
             btnCompDir.Size = new Size(18, 25);
             btnCompDir.TabIndex = 21;
@@ -605,7 +623,7 @@
             // btnGoldDir
             // 
             btnGoldDir.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnGoldDir.Location = new Point(382, 56);
+            btnGoldDir.Location = new Point(463, 56);
             btnGoldDir.Name = "btnGoldDir";
             btnGoldDir.Size = new Size(18, 25);
             btnGoldDir.TabIndex = 20;
@@ -615,7 +633,7 @@
             // btnCreateCompFiles
             // 
             btnCreateCompFiles.FlatStyle = FlatStyle.Flat;
-            btnCreateCompFiles.Location = new Point(416, 91);
+            btnCreateCompFiles.Location = new Point(492, 91);
             btnCreateCompFiles.Name = "btnCreateCompFiles";
             btnCreateCompFiles.Size = new Size(64, 23);
             btnCreateCompFiles.TabIndex = 15;
@@ -631,14 +649,14 @@
             tbCompLoc.ForeColor = Color.LawnGreen;
             tbCompLoc.Location = new Point(127, 92);
             tbCompLoc.Name = "tbCompLoc";
-            tbCompLoc.Size = new Size(260, 23);
+            tbCompLoc.Size = new Size(335, 23);
             tbCompLoc.TabIndex = 19;
             tbCompLoc.Text = "c:\\repos\\GoldenReports";
             // 
             // btnCreateGolden
             // 
             btnCreateGolden.FlatStyle = FlatStyle.Flat;
-            btnCreateGolden.Location = new Point(416, 57);
+            btnCreateGolden.Location = new Point(492, 56);
             btnCreateGolden.Name = "btnCreateGolden";
             btnCreateGolden.Size = new Size(64, 23);
             btnCreateGolden.TabIndex = 14;
@@ -663,7 +681,7 @@
             tbGoldenLoc.ForeColor = Color.LawnGreen;
             tbGoldenLoc.Location = new Point(127, 57);
             tbGoldenLoc.Name = "tbGoldenLoc";
-            tbGoldenLoc.Size = new Size(260, 23);
+            tbGoldenLoc.Size = new Size(335, 23);
             tbGoldenLoc.TabIndex = 16;
             tbGoldenLoc.Text = "c:\\repos\\GoldenReports";
             // 
@@ -681,10 +699,11 @@
             tabSelectReportOptions.Appearance = TabAppearance.FlatButtons;
             tabSelectReportOptions.Controls.Add(ReportSelectionTab);
             tabSelectReportOptions.Controls.Add(tabSelectProjects);
-            tabSelectReportOptions.Location = new Point(598, 0);
+            tabSelectReportOptions.Controls.Add(tabSelectCompanies);
+            tabSelectReportOptions.Location = new Point(599, 0);
             tabSelectReportOptions.Name = "tabSelectReportOptions";
             tabSelectReportOptions.SelectedIndex = 0;
-            tabSelectReportOptions.Size = new Size(417, 723);
+            tabSelectReportOptions.Size = new Size(422, 727);
             tabSelectReportOptions.TabIndex = 13;
             // 
             // ReportSelectionTab
@@ -694,46 +713,9 @@
             ReportSelectionTab.Location = new Point(4, 27);
             ReportSelectionTab.Name = "ReportSelectionTab";
             ReportSelectionTab.Padding = new Padding(3);
-            ReportSelectionTab.Size = new Size(409, 692);
+            ReportSelectionTab.Size = new Size(414, 696);
             ReportSelectionTab.TabIndex = 0;
             ReportSelectionTab.Text = "Select Reports";
-            // 
-            // tabSelectProjects
-            // 
-            tabSelectProjects.Controls.Add(cbtProjects);
-            tabSelectProjects.Location = new Point(4, 27);
-            tabSelectProjects.Name = "tabSelectProjects";
-            tabSelectProjects.Padding = new Padding(3);
-            tabSelectProjects.Size = new Size(409, 692);
-            tabSelectProjects.TabIndex = 1;
-            tabSelectProjects.Text = "Select Projects";
-            tabSelectProjects.UseVisualStyleBackColor = true;
-            // 
-            // cbtProjects
-            // 
-            cbtProjects.BackColor = Color.Black;
-            cbtProjects.Location = new Point(1, 0);
-            cbtProjects.Name = "cbtProjects";
-            cbtProjects.Size = new Size(409, 702);
-            cbtProjects.TabIndex = 0;
-            // 
-            // tabPage2
-            // 
-            tabPage2.Location = new Point(4, 24);
-            tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(1016, 723);
-            tabPage2.TabIndex = 1;
-            tabPage2.Text = "Permissions";
-            tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // label16
-            // 
-            label16.AutoSize = true;
-            label16.Location = new Point(791, 0);
-            label16.Name = "label16";
-            label16.Size = new Size(0, 15);
-            label16.TabIndex = 12;
             // 
             // cbtReports
             // 
@@ -743,24 +725,83 @@
             cbtReports.Size = new Size(409, 702);
             cbtReports.TabIndex = 0;
             // 
+            // tabSelectProjects
+            // 
+            tabSelectProjects.Controls.Add(cbtProjects);
+            tabSelectProjects.Location = new Point(4, 27);
+            tabSelectProjects.Name = "tabSelectProjects";
+            tabSelectProjects.Padding = new Padding(3);
+            tabSelectProjects.Size = new Size(414, 696);
+            tabSelectProjects.TabIndex = 1;
+            tabSelectProjects.Text = "Select Projects";
+            tabSelectProjects.UseVisualStyleBackColor = true;
+            // 
+            // cbtProjects
+            // 
+            cbtProjects.BackColor = Color.Black;
+            cbtProjects.Location = new Point(1, 0);
+            cbtProjects.Name = "cbtProjects";
+            cbtProjects.Size = new Size(416, 702);
+            cbtProjects.TabIndex = 0;
+            // 
+            // tabSelectCompanies
+            // 
+            tabSelectCompanies.BackColor = Color.Black;
+            tabSelectCompanies.Location = new Point(4, 27);
+            tabSelectCompanies.Name = "tabSelectCompanies";
+            tabSelectCompanies.Padding = new Padding(3);
+            tabSelectCompanies.Size = new Size(414, 696);
+            tabSelectCompanies.TabIndex = 2;
+            tabSelectCompanies.Text = "Select Companies";
+            // 
+            // tabPermissions
+            // 
+            tabPermissions.BackColor = Color.Black;
+            tabPermissions.Location = new Point(4, 24);
+            tabPermissions.Name = "tabPermissions";
+            tabPermissions.Padding = new Padding(3);
+            tabPermissions.Size = new Size(1016, 723);
+            tabPermissions.TabIndex = 1;
+            tabPermissions.Text = "Permissions";
+            // 
+            // tabPublishing
+            // 
+            tabPublishing.BackColor = Color.Black;
+            tabPublishing.Location = new Point(4, 24);
+            tabPublishing.Name = "tabPublishing";
+            tabPublishing.Padding = new Padding(3);
+            tabPublishing.Size = new Size(1016, 723);
+            tabPublishing.TabIndex = 2;
+            tabPublishing.Text = "Test Complete";
+            // 
+            // label16
+            // 
+            label16.AutoSize = true;
+            label16.Location = new Point(791, 0);
+            label16.Name = "label16";
+            label16.Size = new Size(0, 15);
+            label16.TabIndex = 12;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1013, 746);
             Controls.Add(label16);
-            Controls.Add(tabControl1);
+            Controls.Add(mainTabControl);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "Form1";
             Text = "STRATUS Report Generation and Testing";
-            tabControl1.ResumeLayout(false);
-            tabPage1.ResumeLayout(false);
+            mainTabControl.ResumeLayout(false);
+            tabSettings.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            tabReports.ResumeLayout(false);
+            tabReports.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
             tabSelectReportOptions.ResumeLayout(false);
@@ -773,8 +814,8 @@
         #endregion
         private OpenFileDialog openFileDialog1;
         private System.ComponentModel.BackgroundWorker backgroundWorker;
-        private TabControl tabControl1;
-        private TabPage tabPage1;
+        private TabControl mainTabControl;
+        private TabPage tabReports;
         private GroupBox groupBox3;
         private Label lblNumPackages;
         private Label lblNumModels;
@@ -801,11 +842,9 @@
         private Label label2;
         private Label label6;
         private TextBox apiKey;
-        private GroupBox groupBox1;
         private Button btnCopy;
         private TextBox tbLink;
         private Label label7;
-        private Label label8;
         private GroupBox groupBox2;
         private Button btnDoCompare;
         private Button btnStop;
@@ -822,7 +861,7 @@
         private Label label9;
         private TextBox tbGoldenLoc;
         private Label label10;
-        private TabPage tabPage2;
+        private TabPage tabPermissions;
         private ProgressBar pbProgressBar;
         private TabControl tabSelectReportOptions;
         private TabPage ReportSelectionTab;
@@ -830,5 +869,10 @@
         private Label label16;
         private CheckBoxListToggle cbtProjects;
         private CheckBoxListToggle cbtReports;
+        private PictureBox pictureBox1;
+        private TabPage tabSelectCompanies;
+        private TabPage tabPublishing;
+        private TabPage tabSettings;
+        private PictureBox pictureBox2;
     }
 }
